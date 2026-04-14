@@ -1,0 +1,92 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import QuoteForm from '../components/QuoteForm.astro';
+---
+
+<BaseLayout title="Get a Quote" description="Request a free, no-obligation quote for drone photography, video, inspections or mapping services.">
+
+  <!-- HERO -->
+  <section class="relative pt-28 pb-14 px-6 lg:px-12 text-center overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(224,98,24,0.05)_0%,transparent_60%)]"></div>
+    <div class="relative z-10 max-w-xl mx-auto">
+      <SectionHeader
+        label="Get a Quote"
+        title="TELL US ABOUT<br />YOUR PROJECT"
+        description="Fill in the details below and we'll get back to you with a clear, no-obligation quote. The more detail you provide, the more accurate your quote will be."
+        center
+      />
+    </div>
+  </section>
+
+  <!-- FORM SECTION -->
+  <section class="pb-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16">
+
+      <!-- Form -->
+      <div class="flex-[2]">
+        <QuoteForm />
+      </div>
+
+      <!-- Sidebar -->
+      <div class="flex-1 space-y-5">
+
+        <!-- What happens next -->
+        <div class="bg-surface border border-border-subtle rounded-lg p-7">
+          <h4 class="font-barlow-condensed text-[15px] font-semibold uppercase tracking-wider text-cream mb-4 flex items-center gap-2.5">
+            <span class="text-orange">&#9678;</span> What Happens Next
+          </h4>
+          <ul class="space-y-0">
+            {[
+              { num: '1', title: 'We Review', desc: 'We read your request and assess the scope.' },
+              { num: '2', title: 'We Quote', desc: 'You receive a clear, written quote — no obligation.' },
+              { num: '3', title: 'We Schedule', desc: 'Once approved, we book the capture date.' },
+              { num: '4', title: 'We Deliver', desc: 'Edited files sent to you, ready to use.' },
+            ].map(step => (
+              <li class="flex gap-3.5 items-start py-3 border-b border-border-subtle last:border-b-0">
+                <div class="w-7 h-7 min-w-[28px] bg-orange/[0.08] border border-border-orange rounded-full flex items-center justify-center font-bebas text-sm text-orange">
+                  {step.num}
+                </div>
+                <div>
+                  <div class="text-sm font-medium text-cream">{step.title}</div>
+                  <div class="text-[13px] text-muted">{step.desc}</div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <!-- Response time -->
+        <div class="bg-surface border border-border-subtle rounded-lg p-7">
+          <h4 class="font-barlow-condensed text-[15px] font-semibold uppercase tracking-wider text-cream mb-3 flex items-center gap-2.5">
+            <span class="text-orange">&#9889;</span> Response Time
+          </h4>
+          <p class="text-sm text-muted leading-relaxed">We typically respond within 24 hours on working days. For urgent requests, call us directly.</p>
+        </div>
+
+        <!-- Direct contact -->
+        <div class="bg-surface border border-border-subtle rounded-lg p-7">
+          <h4 class="font-barlow-condensed text-[15px] font-semibold uppercase tracking-wider text-cream mb-4 flex items-center gap-2.5">
+            <span class="text-orange">&#10022;</span> Contact Us Directly
+          </h4>
+          <div class="space-y-2.5">
+            <div class="flex items-center gap-3 text-sm text-silver">
+              <span class="text-orange w-5 text-center">&#9993;</span>
+              <span>hello@kestrelstudios.uk</span>
+            </div>
+            <div class="flex items-center gap-3 text-sm text-silver">
+              <span class="text-orange w-5 text-center">&#9742;</span>
+              <span>Phone number placeholder</span>
+            </div>
+            <div class="flex items-center gap-3 text-sm text-silver">
+              <span class="text-orange w-5 text-center">&#9673;</span>
+              <span>Kent, United Kingdom</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</BaseLayout>
