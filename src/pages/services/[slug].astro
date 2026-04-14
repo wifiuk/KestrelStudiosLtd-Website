@@ -1,0 +1,115 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Button from '../../components/Button.astro';
+import SectionHeader from '../../components/SectionHeader.astro';
+import IncludedItem from '../../components/IncludedItem.astro';
+import DeliverableCard from '../../components/DeliverableCard.astro';
+import CTASection from '../../components/CTASection.astro';
+import { services } from '../../data/services';
+
+export function getStaticPaths() {
+  return services.map(service => ({
+    params: { slug: service.slug },
+    props: { service },
+  }));
+}
+
+const { service } = Astro.props;
+
+// Build hero title with highlight
+const heroTitleHtml = service.heroTitle.replace(
+  service.highlightWord,
+  `<span class="text-orange">${service.highlightWord}</span>`
+);
+---
+
+<BaseLayout title={service.title} description={service.summary}>
+
+  <!-- HERO -->
+  <section class="relative pt-28 pb-20 px-6 lg:px-12 overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_20%_50%,rgba(224,98,24,0.06)_0%,transparent_50%)]"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-bg to-transparent"></div>
+
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center relative z-10">
+      <div class="flex-1">
+        <div class="font-barlow-condensed text-[13px] font-medium uppercase tracking-[1.5px] text-muted mb-5">
+          Services <span class="text-orange">&rarr;</span> {service.title}
+        </div>
+        <h1 class="font-bebas text-[clamp(2.8rem,5vw,4rem)] leading-[0.95] tracking-[2px] mb-5" set:html={heroTitleHtml} />
+        <p class="text-[17px] font-light text-silver leading-relaxed mb-7 max-w-lg">{service.summary}</p>
+        <Button href="/quote">Request a Quote</Button>
+      </div>
+      <div class="flex-1 w-full">
+        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm relative overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-orange/[0.03] to-transparent"></div>
+          <span class="relative">Placeholder — {service.title.toLowerCase()} image</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT'S INCLUDED -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <SectionHeader
+        label="What's Included"
+        title="EVERYTHING YOU NEED"
+      />
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-10">
+        {service.includes.map(item => (
+          <IncludedItem title={item.title} description={item.description} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WHO IT'S FOR -->
+  <section class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+      <div class="flex-1">
+        <SectionHeader
+          label="Who It's For"
+          title="BUILT FOR YOUR SECTOR"
+        />
+        <ul class="mt-8 space-y-0">
+          {service.audience.map(item => (
+            <li class="py-4 border-b border-border-subtle flex items-start gap-3.5 text-silver">
+              <span class="w-2 h-2 bg-orange rounded-sm rotate-45 mt-1.5 shrink-0"></span>
+              <span><strong class="text-cream font-medium">{item.name}</strong> — {item.detail}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+      <div class="flex-1 w-full">
+        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm">
+          Placeholder — example image
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- DELIVERABLES -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <SectionHeader
+        label="Example Deliverables"
+        title="WHAT YOU COULD RECEIVE"
+      />
+      <p class="text-sm text-muted max-w-xl leading-relaxed mt-[-8px]">
+        Deliverables vary depending on your project scope and quote. Below are examples of what we can provide.
+      </p>
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+        {service.deliverables.map(item => (
+          <DeliverableCard title={item.title} description={item.description} formats={item.formats} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <CTASection
+    title={`NEED ${service.title.toUpperCase().split(' ').slice(0, 3).join(' ')}?`}
+    description="Tell us about your project and we'll put together a quote. No obligation, fast response."
+  />
+
+</BaseLayout>

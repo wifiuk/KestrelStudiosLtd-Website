@@ -1,0 +1,22 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  formats: string[];
+}
+
+const { title, description, formats } = Astro.props;
+---
+
+<div class="bg-surface border border-border-subtle rounded-lg p-7 relative overflow-hidden">
+  <div class="absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-orange to-transparent"></div>
+  <h4 class="font-barlow-condensed text-base font-semibold uppercase tracking-wide text-cream mb-2">{title}</h4>
+  <p class="text-sm text-muted leading-relaxed">{description}</p>
+  <div class="flex gap-2 mt-3">
+    {formats.map(format => (
+      <span class="bg-orange/[0.08] border border-orange/[0.15] rounded px-2.5 py-0.5 font-barlow-condensed text-[11px] font-medium uppercase tracking-wider text-orange">
+        {format}
+      </span>
+    ))}
+  </div>
+</div>
