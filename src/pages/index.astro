@@ -1,9 +1,164 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import ServiceCard from '../components/ServiceCard.astro';
+import ValueCard from '../components/ValueCard.astro';
+import ProcessSteps from '../components/ProcessSteps.astro';
+import CTASection from '../components/CTASection.astro';
+import { services } from '../data/services';
+
+const sectors = [
+  'Estate Agents', 'Property Developers', 'Construction',
+  'Roofing & Property Maintenance', 'Homeowners', 'Landlords',
+  'Farms & Rural Estates', 'Local Businesses', 'Hospitality & Tourism',
+];
+
+const valuePoints = [
+  { title: 'Premium Quality', description: 'High-resolution aerial imagery processed and delivered to a professional standard.' },
+  { title: 'Business-Ready Outputs', description: 'Every deliverable is built for real use — listings, reports, marketing and documentation.' },
+  { title: 'Flexible Service', description: 'From single-shoot projects to recurring site coverage — scaled to fit your needs.' },
+  { title: 'Clear Deliverables', description: 'You know exactly what you are getting. No ambiguity, no surprises.' },
+];
 ---
 
-<BaseLayout title="Home">
-  <div class="min-h-screen flex items-center justify-center">
-    <h1 class="font-bebas text-6xl text-cream">KESTREL STUDIOS</h1>
+<BaseLayout title="Home" description="Professional drone photography, video, inspections, mapping and visual measurement services across Kent and beyond.">
+
+  <!-- HERO -->
+  <section class="relative min-h-[85vh] flex items-center justify-center text-center px-6 lg:px-12 py-20 overflow-hidden">
+    <!-- Background effects -->
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_50%,rgba(224,98,24,0.07)_0%,transparent_50%),radial-gradient(ellipse_at_70%_30%,rgba(224,98,24,0.04)_0%,transparent_50%)]"></div>
+    <div class="absolute inset-0" style="background-image: linear-gradient(rgba(224,98,24,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(224,98,24,0.03) 1px, transparent 1px); background-size: 60px 60px; mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 70%);"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-bg to-transparent"></div>
+
+    <div class="relative z-10 max-w-3xl">
+      <img src="/bird-icon.png" alt="" class="h-16 mx-auto mb-4 drop-shadow-[0_0_40px_rgba(224,98,24,0.3)]" />
+
+      <div class="font-barlow-condensed text-sm font-semibold uppercase tracking-[4px] text-orange mb-6 flex items-center justify-center gap-4">
+        <span class="w-10 h-px bg-gradient-to-r from-transparent to-orange"></span>
+        Aerial Photo &middot; Video &middot; Inspection &middot; Mapping
+        <span class="w-10 h-px bg-gradient-to-l from-transparent to-orange"></span>
+      </div>
+
+      <h1 class="font-bebas text-[clamp(3.5rem,7vw,6.5rem)] leading-[0.95] tracking-[2px] mb-6">
+        AERIAL VISUALS THAT<br />
+        <span class="text-orange">ELEVATE</span> PROPERTY,<br />
+        CONSTRUCTION<br />
+        AND BUSINESS
+      </h1>
+
+      <p class="text-[17px] font-light text-silver max-w-xl mx-auto leading-relaxed mb-10">
+        High-quality drone photography, video, inspections, mapping and visual measurement services for clients across Kent and beyond.
+      </p>
+
+      <div class="flex gap-4 justify-center flex-wrap">
+        <Button href="/quote">Request a Quote</Button>
+        <Button href="#services" variant="secondary">View Services &darr;</Button>
+      </div>
+    </div>
+  </section>
+
+  <!-- TRUST STRIP -->
+  <div class="border-y border-border-subtle bg-alt-bg py-8 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto flex flex-wrap justify-center gap-12 lg:gap-16">
+      {[
+        { icon: '&#9678;', text: 'Professional\nAerial Imagery' },
+        { icon: '&#9889;', text: 'Fast\nTurnaround' },
+        { icon: '&#9673;', text: 'Visual\nInspections' },
+        { icon: '&#11041;', text: 'Mapping\nOutputs' },
+        { icon: '&#10022;', text: 'Quote-Based\nService' },
+      ].map(item => (
+        <div class="flex items-center gap-3.5">
+          <div class="w-10 h-10 border border-border-orange rounded-lg flex items-center justify-center text-orange text-lg bg-orange/[0.05]">
+            <span set:html={item.icon} />
+          </div>
+          <div class="font-barlow-condensed text-[13px] font-medium uppercase tracking-wider text-silver whitespace-pre-line leading-tight">
+            {item.text}
+          </div>
+        </div>
+      ))}
+    </div>
   </div>
+
+  <!-- SERVICES -->
+  <section id="services" class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <div class="text-center mb-14">
+        <SectionHeader
+          label="What We Offer"
+          title="OUR SERVICES"
+          description="Aerial solutions for property, construction, land and business — from a single shoot to ongoing project coverage."
+          center
+        />
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {services.map(service => (
+          <ServiceCard
+            title={service.title}
+            description={service.shortDescription}
+            icon={service.icon}
+            href={`/services/${service.slug}`}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY CHOOSE US -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+      <div class="flex-1">
+        <SectionHeader
+          label="Why Kestrel Studios"
+          title="BUILT FOR<br />REAL BUSINESS<br />RESULTS"
+          description="We deliver practical aerial outputs that help you sell, report, document and market — not just pretty footage."
+        />
+      </div>
+      <div class="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {valuePoints.map(point => (
+          <ValueCard title={point.title} description={point.description} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTORS -->
+  <section id="sectors" class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto text-center">
+      <SectionHeader
+        label="Who We Work With"
+        title="SECTORS WE SERVE"
+        description="From residential homeowners to commercial developers — aerial services for every property need."
+        center
+      />
+      <div class="flex flex-wrap gap-3 justify-center mt-12">
+        {sectors.map(sector => (
+          <div class="bg-surface border border-border-light rounded-md px-6 py-3.5 font-barlow-condensed text-sm font-medium uppercase tracking-wider text-silver hover:border-border-strong hover:text-cream hover:bg-orange/[0.05] transition-all duration-200">
+            {sector}
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- PROCESS -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto text-center">
+      <SectionHeader
+        label="How It Works"
+        title="FROM ENQUIRY TO DELIVERY"
+        center
+      />
+      <div class="mt-14">
+        <ProcessSteps />
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <CTASection
+    title="READY FOR AERIAL<br />VISUALS THAT WORK?"
+    description="Get in touch for a free, no-obligation quote. Tell us about your project and we'll take it from there."
+  />
+
 </BaseLayout>
