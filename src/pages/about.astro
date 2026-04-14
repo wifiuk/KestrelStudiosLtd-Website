@@ -1,0 +1,140 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeader from '../components/SectionHeader.astro';
+import CTASection from '../components/CTASection.astro';
+
+const values = [
+  {
+    title: 'No Wasted Time',
+    description: 'We scope, shoot and deliver efficiently. You get your files fast without chasing.',
+    icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>',
+  },
+  {
+    title: 'Honest Outputs',
+    description: 'We deliver what we promise. No overclaiming, no inflated expectations — just professional results.',
+    icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/></svg>',
+  },
+  {
+    title: 'Quality First',
+    description: 'Every image, video and output is processed to a standard that reflects well on your business.',
+    icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+  },
+];
+
+const approach = [
+  { number: '01', title: 'Scoped to Your Needs', description: 'Every project starts with understanding what you actually need. We don\'t sell fixed packages — we build a scope around your requirements.' },
+  { number: '02', title: 'Clear Quoting', description: 'You get a written quote before any work begins. No surprises, no hidden costs, no vague estimates.' },
+  { number: '03', title: 'Professional Capture', description: 'On-site work is planned, safe and efficient. We operate within all CAA regulations and respect your site and schedule.' },
+  { number: '04', title: 'Delivered Ready to Use', description: 'Files are edited, processed and delivered in the formats you need — ready for listings, reports, social media or presentations.' },
+];
+
+const credentials = [
+  { title: 'CAA Registered', subtitle: 'UK Civil Aviation Authority', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>' },
+  { title: 'Fully Insured', subtitle: 'Public liability coverage', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 12l2 2 4-4"/></svg>' },
+  { title: 'Risk Assessed', subtitle: 'Site-specific flight planning', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' },
+  { title: 'Professional Service', subtitle: 'Clear communication throughout', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>' },
+];
+---
+
+<BaseLayout title="About" description="Professional drone services built for real results. Learn about Kestrel Studios and our approach to aerial photography, video and mapping.">
+
+  <!-- HERO -->
+  <section class="relative pt-28 pb-20 px-6 lg:px-12 text-center overflow-hidden">
+    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_50%_40%,rgba(224,98,24,0.05)_0%,transparent_60%)]"></div>
+    <div class="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-bg to-transparent"></div>
+    <div class="relative z-10 max-w-2xl mx-auto">
+      <SectionHeader
+        label="About Kestrel Studios"
+        title='AERIAL SERVICES<br />BUILT FOR <span class="text-orange">REAL</span><br />RESULTS'
+        description="We provide drone photography, video, inspections, mapping and visual measurement services for property, construction, land and local business clients across Kent and the South East."
+        center
+      />
+    </div>
+  </section>
+
+  <!-- OUR STORY -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto flex flex-col lg:flex-row gap-16 items-center">
+      <div class="flex-1">
+        <SectionHeader label="Our Story" title="WHO WE ARE" />
+        <div class="mt-6 space-y-5 text-base font-light text-silver leading-relaxed">
+          <p><strong class="text-cream font-medium">Kestrel Studios</strong> is a professional drone services company based in Kent, delivering aerial photography, video, visual inspections, mapping and measurement outputs for businesses and individuals.</p>
+          <p>We work with estate agents, property developers, construction firms, roofers, landowners, farmers and local businesses — anyone who needs high-quality aerial content to market, document or assess their property or site.</p>
+          <p>Every project is scoped individually, quoted clearly and delivered to a professional standard. No templates, no generic packages — just practical aerial outputs that serve your specific needs.</p>
+        </div>
+      </div>
+      <div class="flex-1 w-full relative">
+        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm">
+          Placeholder — operator / drone image
+        </div>
+        <div class="absolute -bottom-4 -right-4 bg-surface border border-border-orange rounded-lg px-6 py-5 text-center">
+          <div class="font-bebas text-4xl text-orange leading-none">UK</div>
+          <div class="font-barlow-condensed text-[11px] font-semibold uppercase tracking-[1.5px] text-muted mt-1">CAA Registered</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VALUES -->
+  <section class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto text-center">
+      <SectionHeader label="What Drives Us" title="OUR VALUES" center />
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
+        {values.map(value => (
+          <div class="bg-surface border border-border-subtle rounded-lg p-10 text-center relative overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-10 h-0.5 bg-orange"></div>
+            <div class="w-14 h-14 bg-orange/[0.06] border border-border-light rounded-xl flex items-center justify-center mx-auto mb-5 text-orange">
+              <Fragment set:html={value.icon} />
+            </div>
+            <h3 class="font-barlow-condensed text-lg font-semibold uppercase tracking-wide text-cream mb-3">{value.title}</h3>
+            <p class="text-sm text-muted leading-relaxed">{value.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- APPROACH -->
+  <section class="bg-alt-bg py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <SectionHeader label="Our Approach" title="HOW WE WORK" />
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
+        {approach.map(item => (
+          <div class="bg-surface border border-border-subtle rounded-lg p-7 flex gap-5 items-start">
+            <div class="font-bebas text-3xl text-orange/20 leading-none min-w-[32px]">{item.number}</div>
+            <div>
+              <h4 class="font-barlow-condensed text-base font-semibold uppercase tracking-wide text-cream mb-1.5">{item.title}</h4>
+              <p class="text-sm text-muted leading-relaxed">{item.description}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CREDENTIALS -->
+  <section class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto text-center">
+      <SectionHeader label="Credentials" title="OPERATING TO STANDARD" center />
+      <div class="flex flex-wrap justify-center gap-12 mt-12">
+        {credentials.map(cred => (
+          <div class="text-center">
+            <div class="w-16 h-16 bg-orange/[0.06] border border-border-light rounded-xl flex items-center justify-center mx-auto mb-4 text-orange">
+              <Fragment set:html={cred.icon} />
+            </div>
+            <h4 class="font-barlow-condensed text-sm font-semibold uppercase tracking-wider text-cream mb-1">{cred.title}</h4>
+            <p class="text-xs text-muted">{cred.subtitle}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <CTASection
+    label="Work With Us"
+    title="READY TO GET STARTED?"
+    description="Whether it's a one-off shoot or ongoing project coverage, we'd love to hear about what you need."
+  />
+
+</BaseLayout>
