@@ -1,0 +1,32 @@
+---
+import Button from './Button.astro';
+import SectionHeader from './SectionHeader.astro';
+
+interface Props {
+  label?: string;
+  title: string;
+  description: string;
+  buttonText?: string;
+  buttonHref?: string;
+}
+
+const {
+  label = 'Get Started',
+  title,
+  description,
+  buttonText = 'Request a Quote',
+  buttonHref = '/quote',
+} = Astro.props;
+---
+
+<section class="py-24 px-6 lg:px-12">
+  <div class="max-w-2xl mx-auto text-center bg-surface border border-border-light rounded-xl p-16 relative overflow-hidden">
+    <div class="absolute inset-0 rounded-xl bg-[radial-gradient(ellipse_at_center,rgba(224,98,24,0.04)_0%,transparent_70%)]"></div>
+    <div class="relative z-10">
+      <SectionHeader label={label} title={title} description={description} center />
+      <div class="mt-8">
+        <Button href={buttonHref}>{buttonText}</Button>
+      </div>
+    </div>
+  </div>
+</section>

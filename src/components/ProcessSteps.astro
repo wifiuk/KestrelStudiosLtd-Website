@@ -1,0 +1,24 @@
+---
+const steps = [
+  { number: '1', title: 'Enquire', description: 'Tell us what you need and where.' },
+  { number: '2', title: 'Plan', description: 'We scope the project and confirm your quote.' },
+  { number: '3', title: 'Capture', description: 'On-site aerial photography, video and data capture.' },
+  { number: '4', title: 'Deliver', description: 'Edited, processed files delivered to you.' },
+];
+---
+
+<div class="flex flex-col md:flex-row justify-between relative max-w-4xl mx-auto">
+  <!-- Connecting line (desktop only) -->
+  <div class="hidden md:block absolute top-8 left-20 right-20 h-px bg-gradient-to-r from-border-subtle via-border-strong via-50% to-border-subtle"></div>
+
+  {steps.map(step => (
+    <div class="relative z-10 flex-1 text-center mb-8 md:mb-0">
+      <div class="w-16 h-16 border-2 border-border-strong rounded-full flex items-center justify-center mx-auto mb-5 bg-alt-bg relative">
+        <div class="absolute -inset-1.5 border border-border-subtle rounded-full"></div>
+        <span class="font-bebas text-2xl text-orange">{step.number}</span>
+      </div>
+      <h4 class="font-barlow-condensed text-lg font-semibold uppercase tracking-wider text-cream mb-2">{step.title}</h4>
+      <p class="text-sm text-muted">{step.description}</p>
+    </div>
+  ))}
+</div>
