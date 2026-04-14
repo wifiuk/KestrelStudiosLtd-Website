@@ -1,0 +1,63 @@
+---
+const navLinks = [
+  { label: 'Home', href: '/' },
+  { label: 'Services', href: '/#services' },
+  { label: 'Sectors', href: '/#sectors' },
+  { label: 'About', href: '/about' },
+  { label: 'Contact', href: '/quote' },
+];
+---
+
+<nav class="sticky top-0 z-50 bg-bg/85 backdrop-blur-xl border-b border-border-subtle">
+  <div class="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+    <a href="/" class="flex items-center gap-3">
+      <img src="/bird-icon.png" alt="Kestrel Studios" class="h-9 drop-shadow-[0_0_12px_rgba(224,98,24,0.2)]" />
+      <span class="font-bebas text-xl tracking-[3px] text-cream">KESTREL STUDIOS</span>
+    </a>
+
+    <!-- Desktop nav -->
+    <div class="hidden lg:flex items-center gap-7">
+      {navLinks.map(link => (
+        <a href={link.href} class="font-barlow-condensed text-sm font-medium uppercase tracking-[1.5px] text-silver hover:text-cream transition-colors">
+          {link.label}
+        </a>
+      ))}
+      <a href="/quote" class="bg-orange hover:bg-orange-hover text-white px-5 py-2 rounded font-barlow-condensed font-semibold text-sm uppercase tracking-wider transition-colors">
+        Get a Quote
+      </a>
+    </div>
+
+    <!-- Mobile hamburger -->
+    <button id="mobile-menu-btn" class="lg:hidden text-cream p-2" aria-label="Open menu">
+      <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+        <path d="M3 12h18M3 6h18M3 18h18"/>
+      </svg>
+    </button>
+  </div>
+</nav>
+
+<!-- Mobile menu overlay -->
+<div id="mobile-menu" class="fixed inset-0 z-50 bg-bg/95 backdrop-blur-xl hidden flex-col items-center justify-center gap-8">
+  <button id="mobile-menu-close" class="absolute top-5 right-6 text-cream p-2" aria-label="Close menu">
+    <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+      <path d="M18 6L6 18M6 6l12 12"/>
+    </svg>
+  </button>
+  {navLinks.map(link => (
+    <a href={link.href} class="font-barlow-condensed text-2xl font-medium uppercase tracking-[2px] text-silver hover:text-cream transition-colors">
+      {link.label}
+    </a>
+  ))}
+  <a href="/quote" class="bg-orange hover:bg-orange-hover text-white px-8 py-3 rounded font-barlow-condensed font-semibold text-base uppercase tracking-wider transition-colors mt-4">
+    Get a Quote
+  </a>
+</div>
+
+<script>
+  const btn = document.getElementById('mobile-menu-btn');
+  const menu = document.getElementById('mobile-menu');
+  const close = document.getElementById('mobile-menu-close');
+  btn?.addEventListener('click', () => menu?.classList.replace('hidden', 'flex'));
+  close?.addEventListener('click', () => menu?.classList.replace('flex', 'hidden'));
+  menu?.querySelectorAll('a').forEach(a => a.addEventListener('click', () => menu?.classList.replace('flex', 'hidden')));
+</script>

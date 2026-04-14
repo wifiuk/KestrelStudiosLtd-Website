@@ -1,16 +1,9 @@
 ---
-import '../styles/global.css';
+import BaseLayout from '../layouts/BaseLayout.astro';
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/png" href="/favicon.png" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Kestrel Studios</title>
-	</head>
-	<body>
-		<h1>Kestrel Studios</h1>
-	</body>
-</html>
+<BaseLayout title="Home">
+  <div class="min-h-screen flex items-center justify-center">
+    <h1 class="font-bebas text-6xl text-cream">KESTREL STUDIOS</h1>
+  </div>
+</BaseLayout>
