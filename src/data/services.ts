@@ -24,6 +24,7 @@ export interface Service {
   icon: string;
   heroImage?: string;
   sectionImage?: string;
+  sectionImagePortrait?: boolean;
   modelSrc?: string;
   includes: ServiceInclude[];
   audience: ServiceAudience[];
@@ -257,6 +258,9 @@ export const services: Service[] = [
     highlightWord: 'MODELS',
     summary: 'Visual 3D site models and processed aerial measurement outputs for construction, land and property clients — built from drone imagery.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg>',
+    heroImage: '/3d_automated_mapping.jpg',
+    sectionImage: '/3d_mapping_measurements.png',
+    sectionImagePortrait: true,
     modelSrc: '/site_model.glb',
     includes: [
       { title: '3D Visual Site Models', description: 'Detailed 3D models of buildings, terrain and site features built from aerial imagery.' },

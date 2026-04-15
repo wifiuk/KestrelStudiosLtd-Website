@@ -80,8 +80,8 @@ const heroTitleHtml = service.heroTitle.replace(
         </ul>
       </div>
       <div class="flex-1 w-full">
-        <div class="aspect-[4/3] rounded-lg overflow-hidden">
-          <img src={service.sectionImage ?? '/property_image2.png'} alt={`${service.title} example`} class="w-full h-full object-cover" />
+        <div class={`${service.sectionImagePortrait ? 'aspect-[2/3]' : 'aspect-[4/3]'} rounded-lg overflow-hidden`}>
+          <img src={service.sectionImage ?? '/property_image2.png'} alt={`${service.title} example`} class={`w-full h-full object-cover ${service.sectionImagePortrait ? 'object-top' : 'object-center'}`} />
         </div>
       </div>
     </div>
@@ -96,20 +96,18 @@ const heroTitleHtml = service.heroTitle.replace(
           title="EXPLORE THE SITE"
         />
         <p class="text-sm text-muted max-w-xl leading-relaxed mt-[-8px] mb-10">
-          Drag to orbit, scroll to zoom, right-click to pan.
+          Drag to orbit, scroll to zoom, right-click to pan. Use the cube in the corner to quickly snap to any angle.
         </p>
-        <div class="rounded-lg overflow-hidden border border-border-light bg-surface" style="height: 560px;">
-          <model-viewer
-            src={service.modelSrc}
-            camera-controls
-            auto-rotate
-            shadow-intensity="1"
-            style="width: 100%; height: 100%; background: transparent;"
-          ></model-viewer>
+        <div class="rounded-lg border border-dashed border-orange/40 bg-surface flex items-center justify-center" style="height: 560px;">
+          <div class="text-center">
+            <div class="font-bebas text-orange text-2xl tracking-widest mb-2">TO-DO</div>
+            <p class="text-sm text-muted">Interactive 3D model viewer — in progress</p>
+          </div>
         </div>
       </div>
     </section>
   )}
+
 
   <!-- DELIVERABLES -->
   <section class="bg-alt-bg py-24 px-6 lg:px-12">
