@@ -40,9 +40,8 @@ const heroTitleHtml = service.heroTitle.replace(
         <Button href="/quote">Request a Quote</Button>
       </div>
       <div class="flex-1 w-full">
-        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm relative overflow-hidden">
-          <div class="absolute inset-0 bg-gradient-to-br from-orange/[0.03] to-transparent"></div>
-          <span class="relative">Placeholder — {service.title.toLowerCase()} image</span>
+        <div class="aspect-[4/3] rounded-lg overflow-hidden">
+          <img src={service.heroImage ?? '/property_image1.png'} alt={`${service.title} aerial image`} class="w-full h-full object-cover" />
         </div>
       </div>
     </div>
@@ -81,8 +80,8 @@ const heroTitleHtml = service.heroTitle.replace(
         </ul>
       </div>
       <div class="flex-1 w-full">
-        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm">
-          Placeholder — example image
+        <div class="aspect-[4/3] rounded-lg overflow-hidden">
+          <img src={service.sectionImage ?? '/property_image2.png'} alt={`${service.title} example`} class="w-full h-full object-cover" />
         </div>
       </div>
     </div>

@@ -22,6 +22,8 @@ export interface Service {
   highlightWord: string;
   summary: string;
   icon: string;
+  heroImage?: string;
+  sectionImage?: string;
   includes: ServiceInclude[];
   audience: ServiceAudience[];
   deliverables: ServiceDeliverable[];
@@ -66,6 +68,8 @@ export const services: Service[] = [
     highlightWord: 'INSPECTIONS',
     summary: 'High-resolution aerial imagery and video for visual roof inspections, exterior assessments and storm damage evidence capture — without scaffolding or ladders.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>',
+    heroImage: '/roof_1.png',
+    sectionImage: '/roof_2.png',
     includes: [
       { title: 'Roof Imagery', description: 'Detailed aerial photos of roof surfaces, ridgelines and flashing from multiple angles.' },
       { title: 'Gutter and Chimney Checks', description: 'Close-up visual checks of gutters, downpipes and chimney condition.' },
@@ -96,6 +100,7 @@ export const services: Service[] = [
     highlightWord: 'PROGRESS',
     summary: 'Recurring aerial photography and video to document construction progress, capture milestones and create marketing content throughout your build.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M2 20h20M5 20V8l5-5 5 5v12M10 12h4M10 16h4"/></svg>',
+    heroImage: '/construction_1.png',
     includes: [
       { title: 'Recurring Photo Updates', description: 'Scheduled aerial photography at regular intervals throughout your project.' },
       { title: 'Recurring Video Updates', description: 'Aerial video captures at each visit showing site progress over time.' },
