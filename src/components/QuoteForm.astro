@@ -1,43 +1,92 @@
 ---
 import { services } from '../data/services';
+
+const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
+const quoteEndpoint = import.meta.env.PUBLIC_QUOTE_FORM_ENDPOINT ?? '';
+const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
 ---
 
-<form id="quote-form" class="space-y-0">
+{!formConfigured && (
+  <div class="mb-6 rounded-lg border border-red-500/30 bg-red-500/8 px-4 py-3 text-sm text-red-100">
+    The quote form is not configured yet. Set `PUBLIC_TURNSTILE_SITE_KEY` and `PUBLIC_QUOTE_FORM_ENDPOINT` before deploying.
+  </div>
+)}
+
+<div
+  id="quote-form-debug"
+  class={`mb-6 rounded-lg border px-4 py-3 text-sm ${formConfigured ? 'border-emerald-500/30 bg-emerald-500/8 text-emerald-100' : 'border-yellow-500/30 bg-yellow-500/8 text-yellow-100'}`}
+>
+  Quote endpoint debug: {quoteEndpoint ? `configured (${quoteEndpoint})` : 'missing PUBLIC_QUOTE_FORM_ENDPOINT'}
+</div>
+
+<form
+  id="quote-form"
+  class="space-y-0"
+  data-turnstile-site-key={turnstileSiteKey}
+  data-quote-endpoint={quoteEndpoint}
+  novalidate
+>
   <div class="font-barlow-condensed text-[15px] font-semibold uppercase tracking-[2px] text-cream pb-3 border-b border-border-subtle mb-6">
     Your Details
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-full-name" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Full Name <span class="text-orange">*</span>
       </label>
-      <input type="text" required placeholder="Your full name"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted" />
+      <input
+        id="quote-full-name"
+        name="fullName"
+        type="text"
+        required
+        autocomplete="name"
+        placeholder="Your full name"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+      />
     </div>
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-email" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Email Address <span class="text-orange">*</span>
       </label>
-      <input type="email" required placeholder="you@example.com"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted" />
+      <input
+        id="quote-email"
+        name="email"
+        type="email"
+        required
+        autocomplete="email"
+        placeholder="you@example.com"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+      />
     </div>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-phone" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Phone Number
       </label>
-      <input type="tel" placeholder="07XXX XXX XXX"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted" />
+      <input
+        id="quote-phone"
+        name="phone"
+        type="tel"
+        autocomplete="tel"
+        placeholder="07XXX XXX XXX"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+      />
     </div>
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-business-name" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Business Name
       </label>
-      <input type="text" placeholder="Your company (if applicable)"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted" />
+      <input
+        id="quote-business-name"
+        name="businessName"
+        type="text"
+        autocomplete="organization"
+        placeholder="Your company (if applicable)"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+      />
     </div>
   </div>
 
@@ -46,80 +95,262 @@ import { services } from '../data/services';
   </div>
 
   <div class="mb-6">
-    <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+    <label for="quote-service" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
       Service Required <span class="text-orange">*</span>
     </label>
-    <select required
+    <select
+      id="quote-service"
+      name="service"
+      required
       class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] appearance-none bg-no-repeat bg-[right_16px_center] pr-10"
-      style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23616878' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E&quot;);">
+      style="background-image: url(&quot;data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23616878' viewBox='0 0 16 16'%3E%3Cpath d='M4 6l4 4 4-4'/%3E%3C/svg%3E&quot;);"
+    >
       <option value="" disabled selected>Select a service</option>
-      {services.map(service => (
-        <option value={service.slug}>{service.title}</option>
+      {services.map((service) => (
+        <option value={service.title}>{service.title}</option>
       ))}
-      <option value="not-sure">Not sure — need advice</option>
+      <option value="Not sure — need advice">Not sure — need advice</option>
     </select>
   </div>
 
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-location" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Project Location <span class="text-orange">*</span>
       </label>
-      <input type="text" required placeholder="Town, postcode or site address"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted" />
+      <input
+        id="quote-location"
+        name="projectLocation"
+        type="text"
+        required
+        autocomplete="street-address"
+        placeholder="Town, postcode or site address"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+      />
     </div>
     <div>
-      <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      <label for="quote-preferred-date" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Preferred Date
       </label>
-      <input type="date"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-muted font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)]" />
+      <input
+        id="quote-preferred-date"
+        name="preferredDate"
+        type="date"
+        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-muted font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)]"
+      />
     </div>
   </div>
 
   <div class="mb-6">
-    <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+    <label for="quote-project-details" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
       Project Details <span class="text-orange">*</span>
     </label>
-    <textarea required rows="6" placeholder="Tell us about your project — what do you need, what's the context, any specific requirements?"
-      class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted resize-y"></textarea>
+    <textarea
+      id="quote-project-details"
+      name="projectDetails"
+      required
+      rows="6"
+      placeholder="Tell us about your project — what do you need, what's the context, any specific requirements?"
+      class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted resize-y"
+    ></textarea>
   </div>
 
   <div class="mb-6">
-    <label class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
-      Reference Images <span class="text-muted font-normal normal-case tracking-normal">(Optional)</span>
+    <label for="quote-reference-notes" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
+      Reference Files <span class="text-muted font-normal normal-case tracking-normal">(Optional)</span>
     </label>
-    <div class="bg-surface border-2 border-dashed border-orange/[0.15] rounded-lg p-8 text-center cursor-pointer hover:border-orange/30 hover:bg-orange/[0.02] transition-all">
-      <div class="text-orange mb-2">
-        <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" class="mx-auto"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-      </div>
-      <div class="text-sm text-silver">Click to upload or drag files here</div>
-      <div class="text-xs text-muted mt-1">PNG, JPG, PDF up to 10MB each</div>
+    <div class="rounded-lg border border-border-subtle bg-surface px-4 py-4 text-sm text-muted leading-relaxed">
+      If you have example photos, plans or briefs, mention them in your message and we will reply with a secure upload option.
     </div>
+    <input
+      id="quote-reference-notes"
+      name="referenceNotes"
+      type="text"
+      placeholder="Optional note about files you want to share later"
+      class="mt-3 w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+    />
   </div>
 
-  <button type="submit"
-    class="w-full bg-orange hover:bg-orange-hover text-white py-4 rounded font-barlow-condensed font-semibold text-base uppercase tracking-[1.5px] shadow-[0_4px_24px_rgba(224,98,24,0.25)] hover:shadow-[0_6px_32px_rgba(224,98,24,0.35)] transition-all mt-8 border-none cursor-pointer">
+  <div class="hidden" aria-hidden="true">
+    <label for="quote-website">Website</label>
+    <input id="quote-website" name="website" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+
+  <div class="mb-4">
+    <div
+      class="cf-turnstile"
+      data-sitekey={turnstileSiteKey}
+      data-theme="dark"
+      data-size="flexible"
+      data-action="quote_form"
+    ></div>
+    <p class="mt-2 text-xs text-muted">
+      This form is protected by Cloudflare Turnstile to reduce spam submissions.
+    </p>
+  </div>
+
+  <div id="quote-form-error" class="hidden mb-4 rounded-lg border border-red-500/30 bg-red-500/8 px-4 py-3 text-sm text-red-100"></div>
+
+  <button
+    id="quote-submit"
+    type="submit"
+    class="w-full bg-orange hover:bg-orange-hover disabled:cursor-not-allowed disabled:bg-orange/50 text-white py-4 rounded font-barlow-condensed font-semibold text-base uppercase tracking-[1.5px] shadow-[0_4px_24px_rgba(224,98,24,0.25)] hover:shadow-[0_6px_32px_rgba(224,98,24,0.35)] transition-all mt-8 border-none cursor-pointer"
+    disabled={!formConfigured}
+  >
     Submit Quote Request
   </button>
 </form>
 
-<!-- Success state -->
 <div id="quote-success" class="hidden text-center py-16">
   <div class="w-16 h-16 bg-orange/[0.08] border border-border-orange rounded-full flex items-center justify-center mx-auto mb-6 text-orange text-2xl">
     &#10003;
   </div>
   <h3 class="font-bebas text-3xl tracking-wider mb-3">QUOTE REQUEST SENT</h3>
-  <p class="text-silver max-w-md mx-auto leading-relaxed">Thanks for getting in touch. We'll review your request and get back to you within 24 hours.</p>
+  <p class="text-silver max-w-md mx-auto leading-relaxed">
+    Thanks for getting in touch. We’ve received your request and will get back to you within 24 hours.
+  </p>
 </div>
+
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 
 <script>
   const form = document.getElementById('quote-form');
+  const submitButton = document.getElementById('quote-submit');
   const success = document.getElementById('quote-success');
-  form?.addEventListener('submit', (e) => {
-    e.preventDefault();
-    form.classList.add('hidden');
-    success?.classList.remove('hidden');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+  const errorBox = document.getElementById('quote-form-error');
+  const debugBox = document.getElementById('quote-form-debug');
+
+  const logDebug = (...args) => console.log('[QuoteForm]', ...args);
+
+  const setDebugMessage = (message, isError = false) => {
+    if (!(debugBox instanceof HTMLDivElement)) return;
+
+    debugBox.textContent = message;
+    debugBox.className = `mb-6 rounded-lg border px-4 py-3 text-sm ${
+      isError
+        ? 'border-yellow-500/30 bg-yellow-500/8 text-yellow-100'
+        : 'border-emerald-500/30 bg-emerald-500/8 text-emerald-100'
+    }`;
+  };
+
+  if (form instanceof HTMLFormElement) {
+    logDebug('Resolved endpoint on page load:', form.dataset.quoteEndpoint || '(missing)');
+    logDebug('Resolved Turnstile site key present:', Boolean(form.dataset.turnstileSiteKey));
+
+    setDebugMessage(
+      form.dataset.quoteEndpoint
+        ? `Quote endpoint debug: configured (${form.dataset.quoteEndpoint})`
+        : 'Quote endpoint debug: missing PUBLIC_QUOTE_FORM_ENDPOINT',
+      !form.dataset.quoteEndpoint,
+    );
+  } else {
+    logDebug('Quote form element not found on page load.');
+  }
+
+  const setError = (message) => {
+    if (!errorBox) return;
+    if (!message) {
+      errorBox.textContent = '';
+      errorBox.classList.add('hidden');
+      return;
+    }
+
+    errorBox.textContent = message;
+    errorBox.classList.remove('hidden');
+  };
+
+  submitButton?.addEventListener('click', () => {
+    logDebug('Submit button clicked.');
+  });
+
+  form?.addEventListener('submit', async (event) => {
+    logDebug('Submit handler triggered.');
+    event.preventDefault();
+    setError('');
+
+    if (!(form instanceof HTMLFormElement) || !(submitButton instanceof HTMLButtonElement)) {
+      logDebug('Form or submit button was not available during submit.');
+      return;
+    }
+
+    if (!form.reportValidity()) {
+      logDebug('Native form validation blocked submission.');
+      return;
+    }
+
+    const endpoint = form.dataset.quoteEndpoint;
+    const siteKey = form.dataset.turnstileSiteKey;
+
+    if (!endpoint || !siteKey) {
+      logDebug('Form configuration missing.', {
+        endpointDefined: Boolean(endpoint),
+        siteKeyDefined: Boolean(siteKey),
+      });
+      setError('The quote form is not configured yet. Please try again later.');
+      setDebugMessage(
+        endpoint
+          ? 'Quote endpoint debug: endpoint present, but Turnstile site key is missing.'
+          : 'Quote endpoint debug: missing PUBLIC_QUOTE_FORM_ENDPOINT',
+        true,
+      );
+      return;
+    }
+
+    const turnstileToken = form.querySelector('textarea[name="cf-turnstile-response"]')?.value;
+
+    if (!turnstileToken) {
+      logDebug('Turnstile token missing at submit time.');
+      setError('Please complete the human check before submitting.');
+      return;
+    }
+
+    const formData = new FormData(form);
+    const payload = {
+      fullName: String(formData.get('fullName') ?? '').trim(),
+      email: String(formData.get('email') ?? '').trim(),
+      phone: String(formData.get('phone') ?? '').trim(),
+      businessName: String(formData.get('businessName') ?? '').trim(),
+      service: String(formData.get('service') ?? '').trim(),
+      projectLocation: String(formData.get('projectLocation') ?? '').trim(),
+      preferredDate: String(formData.get('preferredDate') ?? '').trim(),
+      projectDetails: String(formData.get('projectDetails') ?? '').trim(),
+      referenceNotes: String(formData.get('referenceNotes') ?? '').trim(),
+      website: String(formData.get('website') ?? '').trim(),
+      turnstileToken,
+      submittedFrom: window.location.href,
+    };
+
+    submitButton.disabled = true;
+    submitButton.textContent = 'Sending...';
+
+    try {
+      logDebug('Calling fetch()', { endpoint });
+      const response = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const result = await response.json().catch(() => null);
+      logDebug('Fetch completed.', { status: response.status, body: result });
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.message || 'Something went wrong while sending your quote request.');
+      }
+
+      form.classList.add('hidden');
+      success?.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } catch (error) {
+      logDebug('Submission failed.', error);
+      setError(error instanceof Error ? error.message : 'Something went wrong while sending your quote request.');
+      if (window.turnstile) {
+        window.turnstile.reset();
+      }
+      submitButton.disabled = false;
+      submitButton.textContent = 'Submit Quote Request';
+    }
   });
 </script>
