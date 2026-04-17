@@ -1,0 +1,6 @@
+name = "kestrel-quote-form"
+main = "src/index.js"
+compatibility_date = "2026-04-17"
+
+[observability.logs]
+enabled = true
