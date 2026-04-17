@@ -12,13 +12,6 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
   </div>
 )}
 
-<div
-  id="quote-form-debug"
-  class={`mb-6 rounded-lg border px-4 py-3 text-sm ${formConfigured ? 'border-emerald-500/30 bg-emerald-500/8 text-emerald-100' : 'border-yellow-500/30 bg-yellow-500/8 text-yellow-100'}`}
->
-  Quote endpoint debug: {quoteEndpoint ? `configured (${quoteEndpoint})` : 'missing PUBLIC_QUOTE_FORM_ENDPOINT'}
-</div>
-
 <form
   id="quote-form"
   class="space-y-0"
@@ -218,34 +211,6 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
   const submitButton = document.getElementById('quote-submit');
   const success = document.getElementById('quote-success');
   const errorBox = document.getElementById('quote-form-error');
-  const debugBox = document.getElementById('quote-form-debug');
-
-  const logDebug = (...args) => console.log('[QuoteForm]', ...args);
-
-  const setDebugMessage = (message, isError = false) => {
-    if (!(debugBox instanceof HTMLDivElement)) return;
-
-    debugBox.textContent = message;
-    debugBox.className = `mb-6 rounded-lg border px-4 py-3 text-sm ${
-      isError
-        ? 'border-yellow-500/30 bg-yellow-500/8 text-yellow-100'
-        : 'border-emerald-500/30 bg-emerald-500/8 text-emerald-100'
-    }`;
-  };
-
-  if (form instanceof HTMLFormElement) {
-    logDebug('Resolved endpoint on page load:', form.dataset.quoteEndpoint || '(missing)');
-    logDebug('Resolved Turnstile site key present:', Boolean(form.dataset.turnstileSiteKey));
-
-    setDebugMessage(
-      form.dataset.quoteEndpoint
-        ? `Quote endpoint debug: configured (${form.dataset.quoteEndpoint})`
-        : 'Quote endpoint debug: missing PUBLIC_QUOTE_FORM_ENDPOINT',
-      !form.dataset.quoteEndpoint,
-    );
-  } else {
-    logDebug('Quote form element not found on page load.');
-  }
 
   const setError = (message) => {
     if (!errorBox) return;
@@ -259,22 +224,15 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
     errorBox.classList.remove('hidden');
   };
 
-  submitButton?.addEventListener('click', () => {
-    logDebug('Submit button clicked.');
-  });
-
   form?.addEventListener('submit', async (event) => {
-    logDebug('Submit handler triggered.');
     event.preventDefault();
     setError('');
 
     if (!(form instanceof HTMLFormElement) || !(submitButton instanceof HTMLButtonElement)) {
-      logDebug('Form or submit button was not available during submit.');
       return;
     }
 
     if (!form.reportValidity()) {
-      logDebug('Native form validation blocked submission.');
       return;
     }
 
@@ -282,29 +240,18 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
     const siteKey = form.dataset.turnstileSiteKey;
 
     if (!endpoint || !siteKey) {
-      logDebug('Form configuration missing.', {
-        endpointDefined: Boolean(endpoint),
-        siteKeyDefined: Boolean(siteKey),
-      });
       setError('The quote form is not configured yet. Please try again later.');
-      setDebugMessage(
-        endpoint
-          ? 'Quote endpoint debug: endpoint present, but Turnstile site key is missing.'
-          : 'Quote endpoint debug: missing PUBLIC_QUOTE_FORM_ENDPOINT',
-        true,
-      );
       return;
     }
-
-    const turnstileToken = form.querySelector('textarea[name="cf-turnstile-response"]')?.value;
+    
+    const formData = new FormData(form);
+    const turnstileToken = String(formData.get('cf-turnstile-response') ?? '').trim();
 
     if (!turnstileToken) {
-      logDebug('Turnstile token missing at submit time.');
       setError('Please complete the human check before submitting.');
       return;
     }
 
-    const formData = new FormData(form);
     const payload = {
       fullName: String(formData.get('fullName') ?? '').trim(),
       email: String(formData.get('email') ?? '').trim(),
@@ -324,7 +271,6 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
     submitButton.textContent = 'Sending...';
 
     try {
-      logDebug('Calling fetch()', { endpoint });
       const response = await fetch(endpoint, {
         method: 'POST',
         headers: {
@@ -334,7 +280,6 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
       });
 
       const result = await response.json().catch(() => null);
-      logDebug('Fetch completed.', { status: response.status, body: result });
 
       if (!response.ok || !result?.success) {
         throw new Error(result?.message || 'Something went wrong while sending your quote request.');
@@ -344,7 +289,6 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
       success?.classList.remove('hidden');
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (error) {
-      logDebug('Submission failed.', error);
       setError(error instanceof Error ? error.message : 'Something went wrong while sending your quote request.');
       if (window.turnstile) {
         window.turnstile.reset();
