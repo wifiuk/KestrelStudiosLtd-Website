@@ -21,15 +21,6 @@ const buildCorsHeaders = (origin, allowedOrigin) => {
 const sanitize = (value) => String(value ?? '').trim();
 const MAX_FIELD_LENGTH = 4000;
 const MAX_PROJECT_DETAILS_LENGTH = 12000;
-const MAX_FILES = 3;
-const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024;
-const MAX_TOTAL_FILE_SIZE_BYTES = 12 * 1024 * 1024;
-const ALLOWED_FILE_TYPES = new Set([
-  'application/pdf',
-  'image/jpeg',
-  'image/png',
-  'image/webp',
-]);
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const getClientIp = (request) =>
@@ -39,33 +30,11 @@ const getClientIp = (request) =>
 
 const normalizeField = (value, maxLength = MAX_FIELD_LENGTH) => sanitize(value).slice(0, maxLength);
 
-const normalizeFilename = (name) =>
-  sanitize(name)
-    .replace(/[^\w.\-() ]+/g, '_')
-    .slice(0, 120) || 'attachment';
-
-const base64Encode = (bytes) => {
-  let binary = '';
-  const chunkSize = 0x8000;
-
-  for (let index = 0; index < bytes.length; index += chunkSize) {
-    const chunk = bytes.subarray(index, index + chunkSize);
-    binary += String.fromCharCode(...chunk);
-  }
-
-  return btoa(binary);
-};
-
-const encodeUtf8ToBase64 = (value) => base64Encode(new TextEncoder().encode(value));
-
 const parseRequest = async (request) => {
   const contentType = request.headers.get('Content-Type') || '';
 
   if (contentType.includes('multipart/form-data') || contentType.includes('application/x-www-form-urlencoded')) {
     const formData = await request.formData();
-    const files = formData
-      .getAll('referenceFiles')
-      .filter((entry) => entry instanceof File && entry.size > 0);
 
     return {
       payload: {
@@ -82,7 +51,6 @@ const parseRequest = async (request) => {
         turnstileToken: normalizeField(formData.get('turnstileToken')),
         submittedFrom: normalizeField(formData.get('submittedFrom')),
       },
-      files,
     };
   }
 
@@ -102,11 +70,10 @@ const parseRequest = async (request) => {
       turnstileToken: normalizeField(payload.turnstileToken),
       submittedFrom: normalizeField(payload.submittedFrom),
     },
-    files: [],
   };
 };
 
-const validatePayload = (payload, files) => {
+const validatePayload = (payload) => {
   const errors = [];
 
   if (!sanitize(payload.fullName)) errors.push('Full name is required.');
@@ -119,25 +86,6 @@ const validatePayload = (payload, files) => {
   if (!sanitize(payload.projectDetails)) errors.push('Project details are required.');
   if (!sanitize(payload.turnstileToken)) errors.push('Turnstile verification token is missing.');
   if (sanitize(payload.website)) errors.push('Spam submission rejected.');
-  if (files.length > MAX_FILES) errors.push(`No more than ${MAX_FILES} files are allowed.`);
-
-  let totalFileSize = 0;
-  for (const file of files) {
-    totalFileSize += file.size;
-    if (!ALLOWED_FILE_TYPES.has(file.type)) {
-      errors.push('Only PDF, JPG, PNG, and WEBP files are allowed.');
-      break;
-    }
-
-    if (file.size > MAX_FILE_SIZE_BYTES) {
-      errors.push('Each uploaded file must be 5MB or smaller.');
-      break;
-    }
-  }
-
-  if (totalFileSize > MAX_TOTAL_FILE_SIZE_BYTES) {
-    errors.push('Uploaded files are too large.');
-  }
 
   return errors;
 };
@@ -164,7 +112,7 @@ const verifyTurnstile = async ({ secret, token, remoteIp }) => {
   return response.json();
 };
 
-const buildEmailContent = (payload, files) => {
+const buildEmailContent = (payload) => {
   const submittedAt = new Date().toISOString();
   const subject = `New quote request: ${sanitize(payload.service)} - ${sanitize(payload.fullName)}`;
   const lines = [
@@ -178,7 +126,6 @@ const buildEmailContent = (payload, files) => {
     `Reference notes: ${sanitize(payload.referenceNotes) || 'Not provided'}`,
     `Submitted from: ${sanitize(payload.submittedFrom) || 'Not provided'}`,
     `Submitted at: ${submittedAt}`,
-    `Files attached: ${files.length > 0 ? files.map((file) => normalizeFilename(file.name)).join(', ') : 'None'}`,
     '',
     'Project details:',
     sanitize(payload.projectDetails),
@@ -190,77 +137,21 @@ const buildEmailContent = (payload, files) => {
   };
 };
 
-const buildRawEmail = async ({
-  from,
-  to,
-  replyTo,
-  subject,
-  text,
-  files,
-}) => {
-  const boundary = `fe-${crypto.randomUUID()}`;
-  const attachmentParts = await Promise.all(files.map(async (file) => {
-    const arrayBuffer = await file.arrayBuffer();
-    const base64Content = base64Encode(new Uint8Array(arrayBuffer));
-    const filename = normalizeFilename(file.name);
-
-    return [
-      `--${boundary}`,
-      `Content-Type: ${file.type}; name="${filename}"`,
-      `Content-Disposition: attachment; filename="${filename}"`,
-      'Content-Transfer-Encoding: base64',
-      '',
-      base64Content,
-    ].join('\r\n');
-  }));
-
-  return [
-    `From: ${from}`,
-    `To: ${to}`,
-    `Reply-To: ${replyTo}`,
-    `Subject: ${subject}`,
-    'MIME-Version: 1.0',
-    `Content-Type: multipart/mixed; boundary="${boundary}"`,
-    '',
-    `--${boundary}`,
-    'Content-Type: text/plain; charset="UTF-8"',
-    'Content-Transfer-Encoding: base64',
-    '',
-    encodeUtf8ToBase64(text),
-    ...attachmentParts,
-    `--${boundary}--`,
-    '',
-  ].join('\r\n');
-};
-
 const sendQuoteEmail = async ({
   forwardEmailApiToken,
   forwardEmailFromEmail,
   quoteToEmail,
   payload,
-  files,
 }) => {
-  const { subject, text } = buildEmailContent(payload, files);
+  const { subject, text } = buildEmailContent(payload);
 
   const authToken = btoa(`${forwardEmailApiToken}:`);
   const requestBody = new URLSearchParams();
-
-  if (files.length > 0) {
-    requestBody.set('raw', await buildRawEmail({
-      from: forwardEmailFromEmail,
-      to: quoteToEmail,
-      replyTo: sanitize(payload.email),
-      subject,
-      text,
-      files,
-    }));
-  } else {
-    requestBody.set('from', forwardEmailFromEmail);
-    requestBody.set('to', quoteToEmail);
-    requestBody.set('subject', subject);
-    requestBody.set('text', text);
-    requestBody.set('replyTo', sanitize(payload.email));
-  }
+  requestBody.set('from', forwardEmailFromEmail);
+  requestBody.set('to', quoteToEmail);
+  requestBody.set('subject', subject);
+  requestBody.set('text', text);
+  requestBody.set('replyTo', sanitize(payload.email));
 
   const response = await fetch('https://api.forwardemail.net/v1/emails', {
     method: 'POST',
@@ -273,6 +164,38 @@ const sendQuoteEmail = async ({
 
   if (!response.ok) {
     throw new Error(`Email send failed with status ${response.status}.`);
+  }
+
+  return response.json();
+};
+
+const sendQuoteWebhook = async ({
+  officeAppQuoteWebhookUrl,
+  officeAppQuoteWebhookSecret,
+  payload,
+}) => {
+  const response = await fetch(officeAppQuoteWebhookUrl, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${officeAppQuoteWebhookSecret}`,
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify({
+      fullName: payload.fullName,
+      email: payload.email,
+      phone: payload.phone,
+      businessName: payload.businessName,
+      service: payload.service,
+      projectLocation: payload.projectLocation,
+      preferredDate: payload.preferredDate,
+      projectDetails: payload.projectDetails,
+      referenceNotes: payload.referenceNotes,
+      submittedFrom: payload.submittedFrom,
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Webhook send failed with status ${response.status}.`);
   }
 
   return response.json();
@@ -308,6 +231,8 @@ export default {
       !env.TURNSTILE_SECRET_KEY ||
       !env.FORWARD_EMAIL_API_TOKEN ||
       !env.FORWARD_EMAIL_FROM_EMAIL ||
+      !env.OFFICEAPP_QUOTE_WEBHOOK_URL ||
+      !env.OFFICEAPP_QUOTE_WEBHOOK_SECRET ||
       !env.QUOTE_TO_EMAIL ||
       !env.ALLOWED_ORIGIN
     ) {
@@ -318,12 +243,9 @@ export default {
     }
 
     let payload;
-    let files;
-
     try {
       const parsedRequest = await parseRequest(request);
       payload = parsedRequest.payload;
-      files = parsedRequest.files;
     } catch {
       return json(
         { success: false, message: 'Invalid request payload.' },
@@ -331,7 +253,7 @@ export default {
       );
     }
 
-    const validationErrors = validatePayload(payload, files);
+    const validationErrors = validatePayload(payload);
 
     if (validationErrors.length > 0) {
       return json(
@@ -362,7 +284,12 @@ export default {
         forwardEmailFromEmail: env.FORWARD_EMAIL_FROM_EMAIL,
         quoteToEmail: env.QUOTE_TO_EMAIL,
         payload,
-        files,
+      });
+
+      await sendQuoteWebhook({
+        officeAppQuoteWebhookUrl: env.OFFICEAPP_QUOTE_WEBHOOK_URL,
+        officeAppQuoteWebhookSecret: env.OFFICEAPP_QUOTE_WEBHOOK_SECRET,
+        payload,
       });
 
       return json(

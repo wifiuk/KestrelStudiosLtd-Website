@@ -39,12 +39,16 @@ jobs:
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
           FORWARD_EMAIL_API_TOKEN: ${{ secrets.FORWARD_EMAIL_API_TOKEN }}
           FORWARD_EMAIL_FROM_EMAIL: ${{ secrets.FORWARD_EMAIL_FROM_EMAIL }}
+          OFFICEAPP_QUOTE_WEBHOOK_URL: ${{ secrets.OFFICEAPP_QUOTE_WEBHOOK_URL }}
+          OFFICEAPP_QUOTE_WEBHOOK_SECRET: ${{ secrets.OFFICEAPP_QUOTE_WEBHOOK_SECRET }}
           QUOTE_TO_EMAIL: ${{ secrets.QUOTE_TO_EMAIL }}
           ALLOWED_ORIGIN: ${{ secrets.ALLOWED_ORIGIN }}
         run: |
           printf '%s' "$TURNSTILE_SECRET_KEY" | wrangler secret put TURNSTILE_SECRET_KEY --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$FORWARD_EMAIL_API_TOKEN" | wrangler secret put FORWARD_EMAIL_API_TOKEN --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$FORWARD_EMAIL_FROM_EMAIL" | wrangler secret put FORWARD_EMAIL_FROM_EMAIL --config cloudflare/quote-form-worker/wrangler.toml
+          printf '%s' "$OFFICEAPP_QUOTE_WEBHOOK_URL" | wrangler secret put OFFICEAPP_QUOTE_WEBHOOK_URL --config cloudflare/quote-form-worker/wrangler.toml
+          printf '%s' "$OFFICEAPP_QUOTE_WEBHOOK_SECRET" | wrangler secret put OFFICEAPP_QUOTE_WEBHOOK_SECRET --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$QUOTE_TO_EMAIL" | wrangler secret put QUOTE_TO_EMAIL --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$ALLOWED_ORIGIN" | wrangler secret put ALLOWED_ORIGIN --config cloudflare/quote-form-worker/wrangler.toml
           wrangler deploy --config cloudflare/quote-form-worker/wrangler.toml
