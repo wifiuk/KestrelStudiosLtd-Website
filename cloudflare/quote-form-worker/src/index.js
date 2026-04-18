@@ -201,6 +201,9 @@ const sendQuoteWebhook = async ({
   return response.json();
 };
 
+const isWebhookConfigured = (env) =>
+  Boolean(env.OFFICEAPP_QUOTE_WEBHOOK_URL && env.OFFICEAPP_QUOTE_WEBHOOK_SECRET);
+
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
@@ -231,8 +234,6 @@ export default {
       !env.TURNSTILE_SECRET_KEY ||
       !env.FORWARD_EMAIL_API_TOKEN ||
       !env.FORWARD_EMAIL_FROM_EMAIL ||
-      !env.OFFICEAPP_QUOTE_WEBHOOK_URL ||
-      !env.OFFICEAPP_QUOTE_WEBHOOK_SECRET ||
       !env.QUOTE_TO_EMAIL ||
       !env.ALLOWED_ORIGIN
     ) {
@@ -286,11 +287,22 @@ export default {
         payload,
       });
 
-      await sendQuoteWebhook({
-        officeAppQuoteWebhookUrl: env.OFFICEAPP_QUOTE_WEBHOOK_URL,
-        officeAppQuoteWebhookSecret: env.OFFICEAPP_QUOTE_WEBHOOK_SECRET,
-        payload,
-      });
+      if (isWebhookConfigured(env)) {
+        try {
+          await sendQuoteWebhook({
+            officeAppQuoteWebhookUrl: env.OFFICEAPP_QUOTE_WEBHOOK_URL,
+            officeAppQuoteWebhookSecret: env.OFFICEAPP_QUOTE_WEBHOOK_SECRET,
+            payload,
+          });
+        } catch (error) {
+          console.error(
+            'Quote webhook delivery failed:',
+            error instanceof Error ? error.message : 'unknown error',
+          );
+        }
+      } else {
+        console.warn('Quote webhook delivery skipped: webhook is not configured.');
+      }
 
       return json(
         { success: true },
