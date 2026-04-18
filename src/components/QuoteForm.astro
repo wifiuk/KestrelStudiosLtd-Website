@@ -251,6 +251,14 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
     return url.toString();
   };
 
+  const buildResolveUrl = (endpoint, suggestion) => {
+    const url = new URL(endpoint, window.location.href);
+    url.searchParams.set('action', 'location-resolve');
+    url.searchParams.set('placeId', suggestion.placeId);
+    url.searchParams.set('fallback', suggestion.fullText);
+    return url.toString();
+  };
+
   const hideLocationSuggestions = () => {
     locationSuggestions?.classList.add('hidden');
     if (locationInput instanceof HTMLInputElement) {
@@ -295,11 +303,30 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
       }
 
       option.addEventListener('mousedown', (event) => event.preventDefault());
-      option.addEventListener('click', () => {
+      option.addEventListener('click', async () => {
+        const endpoint = form instanceof HTMLFormElement ? form.dataset.quoteEndpoint : '';
         locationInput.value = suggestion.fullText;
         selectedLocationValue = suggestion.fullText;
         hideLocationSuggestions();
-        setLocationHelper('Address selected.');
+        setLocationHelper('Loading full address...');
+
+        if (!endpoint) {
+          setLocationHelper('Address selected.');
+          return;
+        }
+
+        try {
+          const response = await fetch(buildResolveUrl(endpoint, suggestion));
+          const payload = await response.json().catch(() => null);
+          const formattedAddress = payload?.formattedAddress;
+
+          if (response.ok && formattedAddress) {
+            locationInput.value = formattedAddress;
+            selectedLocationValue = formattedAddress;
+          }
+        } finally {
+          setLocationHelper('Address selected.');
+        }
       });
       locationSuggestions.append(option);
     }

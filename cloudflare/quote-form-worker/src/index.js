@@ -78,6 +78,28 @@ const getQuoteLocationSuggestions = async ({ apiKey, query }) => {
     .slice(0, 5);
 };
 
+const resolveQuoteLocation = async ({ apiKey, placeId, fallback }) => {
+  const cleanPlaceId = sanitize(placeId);
+  if (!apiKey || !cleanPlaceId) {
+    return null;
+  }
+
+  const response = await fetch(`https://places.googleapis.com/v1/places/${encodeURIComponent(cleanPlaceId)}`, {
+    headers: {
+      accept: 'application/json',
+      'x-goog-api-key': apiKey,
+      'x-goog-fieldmask': 'formattedAddress',
+    },
+  });
+
+  if (!response.ok) {
+    return null;
+  }
+
+  const payload = await response.json();
+  return sanitize(payload.formattedAddress) || sanitize(fallback) || null;
+};
+
 const parseRequest = async (request) => {
   const contentType = request.headers.get('Content-Type') || '';
 
@@ -281,6 +303,27 @@ export default {
               suggestions: await getQuoteLocationSuggestions({
                 apiKey: env.GOOGLE_MAPS_API_KEY,
                 query: url.searchParams.get('q'),
+              }),
+            },
+            { status: 200, headers: corsHeaders },
+          );
+        }
+
+        if (url.searchParams.get('action') === 'location-resolve') {
+          if (env.ALLOWED_ORIGIN && origin && origin !== env.ALLOWED_ORIGIN) {
+            return json(
+              { configured: Boolean(env.GOOGLE_MAPS_API_KEY), formattedAddress: null },
+              { status: 403, headers: corsHeaders },
+            );
+          }
+
+          return json(
+            {
+              configured: Boolean(env.GOOGLE_MAPS_API_KEY),
+              formattedAddress: await resolveQuoteLocation({
+                apiKey: env.GOOGLE_MAPS_API_KEY,
+                placeId: url.searchParams.get('placeId'),
+                fallback: url.searchParams.get('fallback'),
               }),
             },
             { status: 200, headers: corsHeaders },
