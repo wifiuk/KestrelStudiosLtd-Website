@@ -12,7 +12,7 @@ const buildCorsHeaders = (origin, allowedOrigin) => {
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,
-    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type',
     Vary: 'Origin',
   };
@@ -29,6 +29,54 @@ const getClientIp = (request) =>
   '';
 
 const normalizeField = (value, maxLength = MAX_FIELD_LENGTH) => sanitize(value).slice(0, maxLength);
+
+const getQuoteLocationSuggestions = async ({ apiKey, query }) => {
+  const trimmedQuery = sanitize(query);
+  if (!apiKey || trimmedQuery.length < 3) {
+    return [];
+  }
+
+  const response = await fetch('https://places.googleapis.com/v1/places:autocomplete', {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'x-goog-api-key': apiKey,
+      'x-goog-fieldmask': 'suggestions.placePrediction.placeId,suggestions.placePrediction.text.text,suggestions.placePrediction.structuredFormat.mainText.text,suggestions.placePrediction.structuredFormat.secondaryText.text',
+    },
+    body: JSON.stringify({
+      input: trimmedQuery,
+      languageCode: 'en-GB',
+    }),
+  });
+
+  if (!response.ok) {
+    return [];
+  }
+
+  const payload = await response.json();
+  const dedupe = new Set();
+
+  return (payload.suggestions ?? [])
+    .map((entry) => {
+      const prediction = entry.placePrediction;
+      const fullText = sanitize(prediction?.text?.text);
+
+      if (!prediction?.placeId || !fullText || dedupe.has(fullText)) {
+        return null;
+      }
+
+      dedupe.add(fullText);
+      return {
+        placeId: prediction.placeId,
+        primaryText: sanitize(prediction.structuredFormat?.mainText?.text) || fullText,
+        secondaryText: sanitize(prediction.structuredFormat?.secondaryText?.text),
+        fullText,
+      };
+    })
+    .filter(Boolean)
+    .slice(0, 5);
+};
 
 const parseRequest = async (request) => {
   const contentType = request.headers.get('Content-Type') || '';
@@ -217,6 +265,29 @@ export default {
     }
 
     if (request.method !== 'POST') {
+      if (request.method === 'GET') {
+        const url = new URL(request.url);
+        if (url.searchParams.get('action') === 'location-suggestions') {
+          if (env.ALLOWED_ORIGIN && origin && origin !== env.ALLOWED_ORIGIN) {
+            return json(
+              { configured: Boolean(env.GOOGLE_MAPS_API_KEY), suggestions: [] },
+              { status: 403, headers: corsHeaders },
+            );
+          }
+
+          return json(
+            {
+              configured: Boolean(env.GOOGLE_MAPS_API_KEY),
+              suggestions: await getQuoteLocationSuggestions({
+                apiKey: env.GOOGLE_MAPS_API_KEY,
+                query: url.searchParams.get('q'),
+              }),
+            },
+            { status: 200, headers: corsHeaders },
+          );
+        }
+      }
+
       return json(
         { success: false, message: 'Method not allowed.' },
         { status: 405, headers: corsHeaders },

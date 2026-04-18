@@ -111,15 +111,26 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
       <label for="quote-location" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
         Project Location <span class="text-orange">*</span>
       </label>
-      <input
-        id="quote-location"
-        name="projectLocation"
-        type="text"
-        required
-        autocomplete="street-address"
-        placeholder="Town, postcode or site address"
-        class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
-      />
+      <div class="relative">
+        <input
+          id="quote-location"
+          name="projectLocation"
+          type="text"
+          required
+          autocomplete="street-address"
+          placeholder="Start typing a full address or postcode"
+          class="w-full bg-surface border border-border-light rounded-md px-4 py-3.5 text-cream font-barlow text-[15px] outline-none transition-all focus:border-orange/40 focus:shadow-[0_0_0_3px_rgba(224,98,24,0.08)] placeholder:text-muted"
+          aria-autocomplete="list"
+          aria-controls="quote-location-suggestions"
+          aria-expanded="false"
+        />
+        <div
+          id="quote-location-suggestions"
+          class="absolute z-30 mt-2 hidden max-h-72 w-full overflow-y-auto rounded-lg border border-border-light bg-background shadow-[0_18px_40px_rgba(5,8,18,0.45)]"
+          role="listbox"
+        ></div>
+      </div>
+      <p id="quote-location-helper" class="mt-2 text-xs text-muted">Select an address from the dropdown when possible.</p>
     </div>
     <div>
       <label for="quote-preferred-date" class="block font-barlow-condensed text-[13px] font-semibold uppercase tracking-[1.5px] text-silver mb-2">
@@ -225,6 +236,141 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
   const submitButton = document.getElementById('quote-submit');
   const success = document.getElementById('quote-success');
   const errorBox = document.getElementById('quote-form-error');
+  const locationInput = document.getElementById('quote-location');
+  const locationSuggestions = document.getElementById('quote-location-suggestions');
+  const locationHelper = document.getElementById('quote-location-helper');
+  let addressLookupTimer;
+  let addressLookupAbort;
+  let selectedLocationValue = '';
+  let addressLookupConfigured = false;
+
+  const buildLookupUrl = (endpoint, query) => {
+    const url = new URL(endpoint, window.location.href);
+    url.searchParams.set('action', 'location-suggestions');
+    url.searchParams.set('q', query);
+    return url.toString();
+  };
+
+  const hideLocationSuggestions = () => {
+    locationSuggestions?.classList.add('hidden');
+    if (locationInput instanceof HTMLInputElement) {
+      locationInput.setAttribute('aria-expanded', 'false');
+    }
+  };
+
+  const setLocationHelper = (message) => {
+    if (locationHelper) {
+      locationHelper.textContent = message;
+    }
+  };
+
+  const renderLocationSuggestions = (suggestions) => {
+    if (!locationSuggestions || !(locationInput instanceof HTMLInputElement)) {
+      return;
+    }
+
+    locationSuggestions.innerHTML = '';
+
+    if (suggestions.length === 0) {
+      hideLocationSuggestions();
+      return;
+    }
+
+    for (const suggestion of suggestions) {
+      const option = document.createElement('button');
+      option.type = 'button';
+      option.setAttribute('role', 'option');
+      option.className = 'block w-full px-4 py-3 text-left transition-colors hover:bg-surface';
+
+      const primary = document.createElement('span');
+      primary.className = 'block text-sm text-cream';
+      primary.textContent = suggestion.primaryText;
+      option.append(primary);
+
+      if (suggestion.secondaryText) {
+        const secondary = document.createElement('span');
+        secondary.className = 'mt-0.5 block text-xs text-muted';
+        secondary.textContent = suggestion.secondaryText;
+        option.append(secondary);
+      }
+
+      option.addEventListener('mousedown', (event) => event.preventDefault());
+      option.addEventListener('click', () => {
+        locationInput.value = suggestion.fullText;
+        selectedLocationValue = suggestion.fullText;
+        hideLocationSuggestions();
+        setLocationHelper('Address selected.');
+      });
+      locationSuggestions.append(option);
+    }
+
+    locationSuggestions.classList.remove('hidden');
+    locationInput.setAttribute('aria-expanded', 'true');
+  };
+
+  const lookupLocations = async (query) => {
+    if (!(form instanceof HTMLFormElement)) {
+      return;
+    }
+
+    const endpoint = form.dataset.quoteEndpoint;
+    if (!endpoint || query.length < 3) {
+      hideLocationSuggestions();
+      setLocationHelper('Start typing at least 3 characters to search for an address.');
+      return;
+    }
+
+    addressLookupAbort?.abort();
+    addressLookupAbort = new AbortController();
+    setLocationHelper('Looking up addresses...');
+
+    try {
+      const response = await fetch(buildLookupUrl(endpoint, query), {
+        signal: addressLookupAbort.signal,
+      });
+      const payload = await response.json().catch(() => null);
+      addressLookupConfigured = Boolean(payload?.configured);
+
+      if (!response.ok || !payload?.configured) {
+        hideLocationSuggestions();
+        setLocationHelper('Address lookup is unavailable. You can still type the address manually.');
+        return;
+      }
+
+      renderLocationSuggestions(payload.suggestions ?? []);
+      setLocationHelper((payload.suggestions ?? []).length > 0 ? 'Select the matching address from the dropdown.' : 'No matching addresses found.');
+    } catch (error) {
+      if (error instanceof DOMException && error.name === 'AbortError') {
+        return;
+      }
+
+      hideLocationSuggestions();
+      setLocationHelper('Address lookup is unavailable. You can still type the address manually.');
+    }
+  };
+
+  if (locationInput instanceof HTMLInputElement) {
+    locationInput.addEventListener('input', () => {
+      selectedLocationValue = '';
+      window.clearTimeout(addressLookupTimer);
+      const query = locationInput.value.trim();
+      addressLookupTimer = window.setTimeout(() => {
+        void lookupLocations(query);
+      }, 250);
+    });
+
+    locationInput.addEventListener('focus', () => {
+      const query = locationInput.value.trim();
+      if (query.length >= 3 && locationInput.value !== selectedLocationValue) {
+        void lookupLocations(query);
+      }
+    });
+
+    locationInput.addEventListener('blur', () => {
+      window.setTimeout(hideLocationSuggestions, 150);
+    });
+  }
+
   const setError = (message) => {
     if (!errorBox) return;
     if (!message) {
@@ -267,6 +413,16 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
 
     formData.set('turnstileToken', turnstileToken);
     formData.set('submittedFrom', window.location.href);
+
+    if (
+      addressLookupConfigured
+      && locationInput instanceof HTMLInputElement
+      && locationInput.value.trim() !== selectedLocationValue
+    ) {
+      setError('Please select the project location from the address dropdown.');
+      locationInput.focus();
+      return;
+    }
 
     submitButton.disabled = true;
     submitButton.textContent = 'Sending...';

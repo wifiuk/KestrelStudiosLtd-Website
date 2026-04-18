@@ -39,6 +39,7 @@ jobs:
           TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
           FORWARD_EMAIL_API_TOKEN: ${{ secrets.FORWARD_EMAIL_API_TOKEN }}
           FORWARD_EMAIL_FROM_EMAIL: ${{ secrets.FORWARD_EMAIL_FROM_EMAIL }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
           OFFICEAPP_QUOTE_WEBHOOK_URL: ${{ secrets.OFFICEAPP_QUOTE_WEBHOOK_URL }}
           OFFICEAPP_QUOTE_WEBHOOK_SECRET: ${{ secrets.OFFICEAPP_QUOTE_WEBHOOK_SECRET }}
           QUOTE_TO_EMAIL: ${{ secrets.QUOTE_TO_EMAIL }}
@@ -47,6 +48,9 @@ jobs:
           printf '%s' "$TURNSTILE_SECRET_KEY" | wrangler secret put TURNSTILE_SECRET_KEY --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$FORWARD_EMAIL_API_TOKEN" | wrangler secret put FORWARD_EMAIL_API_TOKEN --config cloudflare/quote-form-worker/wrangler.toml
           printf '%s' "$FORWARD_EMAIL_FROM_EMAIL" | wrangler secret put FORWARD_EMAIL_FROM_EMAIL --config cloudflare/quote-form-worker/wrangler.toml
+          if [ -n "$GOOGLE_MAPS_API_KEY" ]; then
+            printf '%s' "$GOOGLE_MAPS_API_KEY" | wrangler secret put GOOGLE_MAPS_API_KEY --config cloudflare/quote-form-worker/wrangler.toml
+          fi
           if [ -n "$OFFICEAPP_QUOTE_WEBHOOK_URL" ]; then
             printf '%s' "$OFFICEAPP_QUOTE_WEBHOOK_URL" | wrangler secret put OFFICEAPP_QUOTE_WEBHOOK_URL --config cloudflare/quote-form-worker/wrangler.toml
           fi
