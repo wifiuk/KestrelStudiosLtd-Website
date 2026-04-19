@@ -134,6 +134,7 @@ export const services: Service[] = [
     highlightWord: 'CONTENT',
     summary: 'Aerial photography and video content designed for social media, websites and business promotion — helping local businesses stand out with professional visuals.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14"/><rect x="2" y="6" width="13" height="12" rx="2"/></svg>',
+    heroImage: '/business_social_media_hero.png',
     includes: [
       { title: 'Short Promotional Clips', description: 'Punchy aerial video clips designed for social media and website use.' },
       { title: 'Social Media Reels', description: 'Vertical and square format cuts ready for Instagram, TikTok and Facebook.' },
