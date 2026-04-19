@@ -7,8 +7,32 @@ const json = (body, init = {}) =>
     },
   });
 
-const buildCorsHeaders = (origin, allowedOrigin) => {
-  const allowOrigin = allowedOrigin && origin === allowedOrigin ? origin : allowedOrigin || '*';
+const getAllowedOrigins = (env) => {
+  const configured = String(env.ALLOWED_ORIGINS || env.ALLOWED_ORIGIN || '')
+    .split(',')
+    .map((value) => value.trim())
+    .filter(Boolean);
+  const expanded = new Set(configured);
+
+  for (const value of configured) {
+    if (value === 'https://www.kestrelstudios.uk') {
+      expanded.add('https://kestrelstudios.uk');
+    }
+    if (value === 'https://kestrelstudios.uk') {
+      expanded.add('https://www.kestrelstudios.uk');
+    }
+  }
+
+  return [...expanded];
+};
+
+const isOriginAllowed = (origin, allowedOrigins) =>
+  !origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin);
+
+const buildCorsHeaders = (origin, allowedOrigins) => {
+  const allowOrigin = allowedOrigins.includes(origin)
+    ? origin
+    : allowedOrigins[0] || '*';
 
   return {
     'Access-Control-Allow-Origin': allowOrigin,
@@ -277,7 +301,8 @@ const isWebhookConfigured = (env) =>
 export default {
   async fetch(request, env) {
     const origin = request.headers.get('Origin') || '';
-    const corsHeaders = buildCorsHeaders(origin, env.ALLOWED_ORIGIN);
+    const allowedOrigins = getAllowedOrigins(env);
+    const corsHeaders = buildCorsHeaders(origin, allowedOrigins);
 
     if (request.method === 'OPTIONS') {
       return new Response(null, {
@@ -290,7 +315,7 @@ export default {
       if (request.method === 'GET') {
         const url = new URL(request.url);
         if (url.searchParams.get('action') === 'location-suggestions') {
-          if (env.ALLOWED_ORIGIN && origin && origin !== env.ALLOWED_ORIGIN) {
+          if (!isOriginAllowed(origin, allowedOrigins)) {
             return json(
               { configured: Boolean(env.GOOGLE_MAPS_API_KEY), suggestions: [] },
               { status: 403, headers: corsHeaders },
@@ -310,7 +335,7 @@ export default {
         }
 
         if (url.searchParams.get('action') === 'location-resolve') {
-          if (env.ALLOWED_ORIGIN && origin && origin !== env.ALLOWED_ORIGIN) {
+          if (!isOriginAllowed(origin, allowedOrigins)) {
             return json(
               { configured: Boolean(env.GOOGLE_MAPS_API_KEY), formattedAddress: null },
               { status: 403, headers: corsHeaders },
@@ -337,7 +362,7 @@ export default {
       );
     }
 
-    if (env.ALLOWED_ORIGIN && origin !== env.ALLOWED_ORIGIN) {
+    if (!isOriginAllowed(origin, allowedOrigins)) {
       return json(
         { success: false, message: 'Origin not allowed.' },
         { status: 403, headers: corsHeaders },
@@ -349,7 +374,7 @@ export default {
       !env.FORWARD_EMAIL_API_TOKEN ||
       !env.FORWARD_EMAIL_FROM_EMAIL ||
       !env.QUOTE_TO_EMAIL ||
-      !env.ALLOWED_ORIGIN
+      allowedOrigins.length === 0
     ) {
       return json(
         { success: false, message: 'Server is not configured.' },
