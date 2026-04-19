@@ -230,6 +230,8 @@ export const services: Service[] = [
     highlightWord: 'DESTINATION',
     summary: 'Aerial photography and video that showcases hotels, visitor attractions, vineyards, coastal spots and rural destinations — compelling content that draws visitors and builds a sense of place.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 000 20M12 2a14.5 14.5 0 010 20M2 12h20"/></svg>',
+    heroImage: '/tourism_destination_hero.png',
+    sectionImage: '/tourism_destination_section.jpg',
     includes: [
       { title: 'Location Aerial Photos', description: 'High-resolution aerial imagery showcasing your venue, grounds and surroundings.' },
       { title: 'Destination Flyover Video', description: 'Cinematic aerial video revealing your location at its best.' },
