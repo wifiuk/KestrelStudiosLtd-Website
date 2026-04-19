@@ -1,63 +1,17 @@
 ---
-const navLinks = [
-  { label: 'Home', href: '/' },
-  { label: 'Services', href: '/#services' },
-  { label: 'Sectors', href: '/#sectors' },
-  { label: 'About', href: '/about' },
-];
-const serviceLinks = [
-  { label: 'Property Photography', href: '/services/property-photography-video' },
-  { label: 'Inspections', href: '/services/roof-exterior-storm-damage-inspections' },
-  { label: 'Construction Progress', href: '/services/construction-progress-updates' },
-  { label: 'Mapping & Models', href: '/services/2d-mapping-site-overviews' },
-];
-const contactLinks = [
-  { label: 'Get a Quote', href: '/quote' },
-  { label: 'Email Us', href: '/quote' },
-];
+const currentYear = new Date().getFullYear();
 ---
 
 <footer class="bg-bg border-t border-border-subtle">
-  <div class="max-w-7xl mx-auto px-6 lg:px-12 pt-12 pb-8">
-    <div class="flex flex-col lg:flex-row justify-between gap-12">
-      <div>
-        <div class="flex items-center gap-3 mb-3">
-          <img src="/bird-icon.png" alt="" class="h-8" />
-          <span class="font-bebas text-xl tracking-[2px] text-cream">KESTREL STUDIOS</span>
-        </div>
-        <div class="font-barlow-condensed text-sm text-muted leading-relaxed">
-          Kestrel Studios Ltd<br />
-          Company No. 17149140<br />
-          Kent, United Kingdom
-        </div>
+  <div class="max-w-7xl mx-auto px-6 lg:px-12 py-8">
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+      <div class="flex items-center gap-3">
+        <img src="/bird-icon.png" alt="" class="h-8" />
+        <span class="font-bebas text-xl tracking-[2px] text-cream">KESTREL STUDIOS</span>
       </div>
-      <div class="flex gap-16 flex-wrap">
-        <div>
-          <h5 class="font-barlow-condensed text-xs font-semibold uppercase tracking-[2px] text-orange mb-3">Navigation</h5>
-          {navLinks.map(link => (
-            <a href={link.href} class="block text-sm text-muted hover:text-cream transition-colors mb-2">{link.label}</a>
-          ))}
-        </div>
-        <div>
-          <h5 class="font-barlow-condensed text-xs font-semibold uppercase tracking-[2px] text-orange mb-3">Services</h5>
-          {serviceLinks.map(link => (
-            <a href={link.href} class="block text-sm text-muted hover:text-cream transition-colors mb-2">{link.label}</a>
-          ))}
-        </div>
-        <div>
-          <h5 class="font-barlow-condensed text-xs font-semibold uppercase tracking-[2px] text-orange mb-3">Contact</h5>
-          {contactLinks.map(link => (
-            <a href={link.href} class="block text-sm text-muted hover:text-cream transition-colors mb-2">{link.label}</a>
-          ))}
-        </div>
-      </div>
-    </div>
-    <div class="mt-8 pt-6 border-t border-border-subtle flex flex-col sm:flex-row justify-between text-xs text-muted gap-4">
-      <span>&copy; 2026 Kestrel Studios Ltd. All rights reserved.</span>
-      <div class="flex gap-6">
-        <a href="#" class="hover:text-cream transition-colors">Privacy Policy</a>
-        <a href="#" class="hover:text-cream transition-colors">Terms of Service</a>
-      </div>
+      <p class="text-xs text-muted">
+        &copy; {currentYear} Kestrel Studios Ltd. All rights reserved.
+      </p>
     </div>
   </div>
 </footer>
