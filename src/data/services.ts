@@ -296,6 +296,8 @@ export const services: Service[] = [
     highlightWord: 'VOLUME',
     summary: 'Aerial volume estimates for stockpiles, earthworks and materials — helping you track quantities, monitor changes and plan logistics.',
     icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>',
+    heroImage: '/stockpile_volume_hero.png',
+    sectionImage: '/stockpile_volume_section.png',
     includes: [
       { title: 'Stockpile Volume Estimates', description: 'Volume estimates derived from aerial imagery and photogrammetry processing.' },
       { title: 'Progress Comparisons', description: 'Volume change tracking across multiple visits to monitor usage or accumulation.' },
