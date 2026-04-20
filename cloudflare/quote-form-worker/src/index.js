@@ -266,6 +266,8 @@ const sendQuoteEmail = async ({
 const sendQuoteWebhook = async ({
   officeAppQuoteWebhookUrl,
   officeAppQuoteWebhookSecret,
+  cfAccessClientId,
+  cfAccessClientSecret,
   payload,
 }) => {
   const response = await fetch(officeAppQuoteWebhookUrl, {
@@ -273,6 +275,8 @@ const sendQuoteWebhook = async ({
     headers: {
       Authorization: `Bearer ${officeAppQuoteWebhookSecret}`,
       'Content-Type': 'application/json; charset=utf-8',
+      'CF-Access-Client-Id': cfAccessClientId,
+      'CF-Access-Client-Secret': cfAccessClientSecret,
     },
     body: JSON.stringify({
       fullName: payload.fullName,
@@ -296,7 +300,12 @@ const sendQuoteWebhook = async ({
 };
 
 const isWebhookConfigured = (env) =>
-  Boolean(env.OFFICEAPP_QUOTE_WEBHOOK_URL && env.OFFICEAPP_QUOTE_WEBHOOK_SECRET);
+  Boolean(
+    env.OFFICEAPP_QUOTE_WEBHOOK_URL &&
+    env.OFFICEAPP_QUOTE_WEBHOOK_SECRET &&
+    env.CF_ACCESS_CLIENT_ID &&
+    env.CF_ACCESS_CLIENT_SECRET,
+  );
 
 export default {
   async fetch(request, env) {
@@ -431,6 +440,8 @@ export default {
           await sendQuoteWebhook({
             officeAppQuoteWebhookUrl: env.OFFICEAPP_QUOTE_WEBHOOK_URL,
             officeAppQuoteWebhookSecret: env.OFFICEAPP_QUOTE_WEBHOOK_SECRET,
+            cfAccessClientId: env.CF_ACCESS_CLIENT_ID,
+            cfAccessClientSecret: env.CF_ACCESS_CLIENT_SECRET,
             payload,
           });
         } catch (error) {
