@@ -21,7 +21,7 @@ export const businessProfile = {
   name: siteName,
   url: defaultSiteUrl,
   logo: `${defaultSiteUrl}/favicon.png`,
-  image: `${defaultSiteUrl}/property_image1.png`,
+  image: `${defaultSiteUrl}/property_image1.webp`,
   description: siteDescription,
   areaServed: serviceArea.map((name) => ({
     '@type': 'Place',

@@ -24,15 +24,15 @@ const heroTitleHtml = service.heroTitle.replace(
 );
 
 const serviceUrl = `${defaultSiteUrl}/services/${service.slug}/`;
-const serviceImage = `${defaultSiteUrl}${service.heroImage ?? '/property_image1.png'}`;
+const serviceImage = `${defaultSiteUrl}${service.heroImage ?? '/property_image1.webp'}`;
 const faqItems = [
   {
     question: `Who is ${service.title.toLowerCase()} for?`,
     answer: service.audience.map((item) => `${item.name}: ${item.detail}`).join(' '),
   },
   {
-    question: `What do you receive with ${service.title.toLowerCase()}?`,
-    answer: service.deliverables.map((item) => `${item.title}: ${item.description}`).join(' '),
+    question: `What could you receive with ${service.title.toLowerCase()}?`,
+    answer: `Depending on your project scope, you could receive outputs such as ${service.deliverables.map((item) => `${item.title}: ${item.description}`).join(' ')}`,
   },
   {
     question: `Do you provide ${service.title.toLowerCase()} in Kent?`,
@@ -112,7 +112,7 @@ const serviceStructuredData = [
 <BaseLayout
   title={`${service.title} in Kent`}
   description={service.summary}
-  image={service.heroImage ?? '/property_image1.png'}
+  image={service.heroImage ?? '/property_image1.webp'}
   structuredData={serviceStructuredData}
 >
 
@@ -132,7 +132,15 @@ const serviceStructuredData = [
       </div>
       <div class="flex-1 w-full">
         <div class="aspect-[4/3] rounded-lg overflow-hidden">
-          <img src={service.heroImage ?? '/property_image1.png'} alt={`${service.title} aerial image`} class="w-full h-full object-cover" />
+          <img
+            src={service.heroImage ?? '/property_image1.webp'}
+            alt={`${service.title} aerial image`}
+            width="1600"
+            height="1200"
+            decoding="async"
+            fetchpriority="high"
+            class="w-full h-full object-cover"
+          />
         </div>
       </div>
     </div>
@@ -172,7 +180,15 @@ const serviceStructuredData = [
       </div>
       <div class="flex-1 w-full">
         <div class={`${service.sectionImagePortrait ? 'aspect-[2/3]' : 'aspect-[4/3]'} rounded-lg overflow-hidden`}>
-          <img src={service.sectionImage ?? '/property_image2.png'} alt={`${service.title} example`} class={`w-full h-full object-cover ${service.sectionImagePortrait ? 'object-top' : 'object-center'}`} />
+          <img
+            src={service.sectionImage ?? '/property_image2.webp'}
+            alt={`${service.title} example`}
+            width="1600"
+            height={service.sectionImagePortrait ? '2400' : '1200'}
+            loading="lazy"
+            decoding="async"
+            class={`w-full h-full object-cover ${service.sectionImagePortrait ? 'object-top' : 'object-center'}`}
+          />
         </div>
       </div>
     </div>
