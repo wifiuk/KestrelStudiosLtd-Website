@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import CTASection from '../components/CTASection.astro';
+import { businessProfile, defaultSiteUrl, siteName } from '../data/site';
 
 const values = [
   {
@@ -34,9 +35,30 @@ const credentials = [
   { title: 'Risk Assessed', subtitle: 'Site-specific flight planning', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>' },
   { title: 'Professional Service', subtitle: 'Clear communication throughout', icon: '<svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>' },
 ];
+
+const aboutStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    ...businessProfile,
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'AboutPage',
+    '@id': `${defaultSiteUrl}/about/#about-page`,
+    name: `About ${siteName}`,
+    url: `${defaultSiteUrl}/about/`,
+    description: 'Company approach, credentials and operating standards for Kestrel Studios drone services.',
+    mainEntity: { '@id': `${defaultSiteUrl}/#business` },
+  },
+];
 ---
 
-<BaseLayout title="About" description="Professional drone services built for real results. Learn about Kestrel Studios and our approach to aerial photography, video and mapping.">
+<BaseLayout
+  title="About Kestrel Studios"
+  description="Professional drone services built for real results. Learn about Kestrel Studios and our approach to aerial photography, video, inspections and mapping across Kent."
+  image="/dji-mini-5-pro-blueprint.png"
+  structuredData={aboutStructuredData}
+>
 
   <!-- HERO -->
   <section class="relative pt-28 pb-20 px-6 lg:px-12 text-center overflow-hidden">
@@ -64,8 +86,16 @@ const credentials = [
         </div>
       </div>
       <div class="flex-1 w-full relative">
-        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg flex items-center justify-center text-muted text-sm">
-          Placeholder — operator / drone image
+        <div class="aspect-[4/3] bg-surface border border-border-light rounded-lg overflow-hidden">
+          <img
+            src="/dji-mini-5-pro-blueprint.png"
+            alt="DJI Mini 5 Pro blueprint showing drone dimensions and specifications"
+            width="1024"
+            height="1536"
+            loading="lazy"
+            decoding="async"
+            class="w-full h-full object-cover object-top"
+          />
         </div>
         <div class="absolute -bottom-4 -right-4 bg-surface border border-border-orange rounded-lg px-6 py-5 text-center">
           <div class="font-bebas text-4xl text-orange leading-none">UK</div>

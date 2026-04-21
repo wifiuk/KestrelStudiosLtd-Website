@@ -6,6 +6,7 @@ import IncludedItem from '../../components/IncludedItem.astro';
 import DeliverableCard from '../../components/DeliverableCard.astro';
 import CTASection from '../../components/CTASection.astro';
 import { services } from '../../data/services';
+import { defaultSiteUrl, siteName } from '../../data/site';
 
 export function getStaticPaths() {
   return services.map(service => ({
@@ -21,9 +22,99 @@ const heroTitleHtml = service.heroTitle.replace(
   service.highlightWord,
   `<span class="text-orange">${service.highlightWord}</span>`
 );
+
+const serviceUrl = `${defaultSiteUrl}/services/${service.slug}/`;
+const serviceImage = `${defaultSiteUrl}${service.heroImage ?? '/property_image1.png'}`;
+const faqItems = [
+  {
+    question: `Who is ${service.title.toLowerCase()} for?`,
+    answer: service.audience.map((item) => `${item.name}: ${item.detail}`).join(' '),
+  },
+  {
+    question: `What do you receive with ${service.title.toLowerCase()}?`,
+    answer: service.deliverables.map((item) => `${item.title}: ${item.description}`).join(' '),
+  },
+  {
+    question: `Do you provide ${service.title.toLowerCase()} in Kent?`,
+    answer: `Yes. Kestrel Studios provides ${service.title.toLowerCase()} for clients across Kent and the South East. Each project is scoped individually so the quote reflects the site, output requirements and deliverables needed.`,
+  },
+];
+
+const serviceStructuredData = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    '@id': `${serviceUrl}#service`,
+    name: service.title,
+    description: service.summary,
+    url: serviceUrl,
+    image: serviceImage,
+    provider: {
+      '@type': 'ProfessionalService',
+      '@id': `${defaultSiteUrl}/#business`,
+      name: siteName,
+      url: defaultSiteUrl,
+    },
+    areaServed: {
+      '@type': 'AdministrativeArea',
+      name: 'Kent and the South East',
+    },
+    serviceType: service.title,
+    offers: {
+      '@type': 'Offer',
+      availability: 'https://schema.org/InStock',
+      priceSpecification: {
+        '@type': 'PriceSpecification',
+        priceCurrency: 'GBP',
+      },
+      url: `${defaultSiteUrl}/quote/`,
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${defaultSiteUrl}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Services',
+        item: `${defaultSiteUrl}/#services`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: service.title,
+        item: serviceUrl,
+      },
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqItems.map((item) => ({
+      '@type': 'Question',
+      name: item.question,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: item.answer,
+      },
+    })),
+  },
+];
 ---
 
-<BaseLayout title={service.title} description={service.summary}>
+<BaseLayout
+  title={`${service.title} in Kent`}
+  description={service.summary}
+  image={service.heroImage ?? '/property_image1.png'}
+  structuredData={serviceStructuredData}
+>
 
   <!-- HERO -->
   <section class="relative pt-28 pb-20 px-6 lg:px-12 overflow-hidden">
@@ -87,28 +178,6 @@ const heroTitleHtml = service.heroTitle.replace(
     </div>
   </section>
 
-  <!-- 3D MODEL VIEWER -->
-  {service.modelSrc && (
-    <section class="py-24 px-6 lg:px-12">
-      <div class="max-w-7xl mx-auto">
-        <SectionHeader
-          label="Interactive 3D Model"
-          title="EXPLORE THE SITE"
-        />
-        <p class="text-sm text-muted max-w-xl leading-relaxed mt-[-8px] mb-10">
-          Drag to orbit, scroll to zoom, right-click to pan. Use the cube in the corner to quickly snap to any angle.
-        </p>
-        <div class="rounded-lg border border-dashed border-orange/40 bg-surface flex items-center justify-center" style="height: 560px;">
-          <div class="text-center">
-            <div class="font-bebas text-orange text-2xl tracking-widest mb-2">TO-DO</div>
-            <p class="text-sm text-muted">Interactive 3D model viewer — in progress</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  )}
-
-
   <!-- DELIVERABLES -->
   <section class="bg-alt-bg py-24 px-6 lg:px-12">
     <div class="max-w-7xl mx-auto">
@@ -122,6 +191,27 @@ const heroTitleHtml = service.heroTitle.replace(
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-10">
         {service.deliverables.map(item => (
           <DeliverableCard title={item.title} description={item.description} formats={item.formats} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-24 px-6 lg:px-12">
+    <div class="max-w-7xl mx-auto">
+      <SectionHeader
+        label="Common Questions"
+        title="SERVICE FAQ"
+      />
+      <div class="mt-10 divide-y divide-border-subtle border-y border-border-subtle">
+        {faqItems.map((item) => (
+          <details class="group py-6">
+            <summary class="cursor-pointer list-none font-barlow-condensed text-lg font-semibold uppercase tracking-wide text-cream flex items-center justify-between gap-6">
+              <span>{item.question}</span>
+              <span class="text-orange group-open:rotate-45 transition-transform">+</span>
+            </summary>
+            <p class="mt-4 text-sm text-muted leading-relaxed max-w-3xl">{item.answer}</p>
+          </details>
         ))}
       </div>
     </div>

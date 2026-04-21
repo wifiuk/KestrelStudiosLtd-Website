@@ -2,9 +2,29 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import SectionHeader from '../components/SectionHeader.astro';
 import QuoteForm from '../components/QuoteForm.astro';
+import { defaultSiteUrl, siteName } from '../data/site';
+
+const quoteStructuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'ContactPage',
+  '@id': `${defaultSiteUrl}/quote/#contact-page`,
+  name: `Get a quote from ${siteName}`,
+  url: `${defaultSiteUrl}/quote/`,
+  description: 'Request a quote for drone photography, aerial video, inspections, mapping and visual measurement services.',
+  about: {
+    '@type': 'ProfessionalService',
+    '@id': `${defaultSiteUrl}/#business`,
+    name: siteName,
+    url: defaultSiteUrl,
+  },
+};
 ---
 
-<BaseLayout title="Get a Quote" description="Request a free, no-obligation quote for drone photography, video, inspections or mapping services.">
+<BaseLayout
+  title="Get a Drone Services Quote"
+  description="Request a free, no-obligation quote for drone photography, video, inspections, mapping or visual measurement services in Kent and the South East."
+  structuredData={quoteStructuredData}
+>
 
   <!-- HERO -->
   <section class="relative pt-28 pb-14 px-6 lg:px-12 text-center overflow-hidden">
