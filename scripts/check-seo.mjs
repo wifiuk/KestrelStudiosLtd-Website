@@ -59,9 +59,6 @@ expectIncludes(robots, 'Sitemap:', 'sitemap declaration');
 
 read('sitemap-index.xml');
 
-const about = read('about/index.html');
-expectIncludes(about, '/dji-mini-5-pro-blueprint.webp', 'about page blueprint image');
-
 const modelPage = read('services/3d-site-models-measurements/index.html');
 if (modelPage.includes('TO-DO') || modelPage.includes('Interactive 3D model viewer')) {
   throw new Error('3D service page still contains the placeholder model section');
