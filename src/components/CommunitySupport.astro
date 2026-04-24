@@ -1,0 +1,42 @@
+---
+import Button from './Button.astro';
+import SectionHeader from './SectionHeader.astro';
+
+const supportServices = [
+  'Aerial photography',
+  'Short video clips',
+  'Inspection imagery',
+  'Site overviews',
+];
+---
+
+<div class="mt-10 rounded-lg border border-border-subtle bg-surface p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-orange/40 to-transparent"></div>
+  <div class="grid grid-cols-1 lg:grid-cols-[1.1fr_0.9fr] gap-8 lg:gap-12 items-center">
+    <div>
+      <SectionHeader
+        label="Community Support"
+        title='FREE SUPPORT FOR<br /><span class="text-orange">SELECTED</span> GOOD CAUSES'
+        description="We can occasionally offer selected services from our normal range free of charge for charities, community groups and local good causes, where availability allows."
+      />
+      <p class="mt-5 text-sm text-muted leading-relaxed max-w-2xl">
+        Free support is considered case by case and is subject to availability, location, permissions, weather and safe flight planning. To enquire, use the quote form and select “Community support / charity enquiry”.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-3">
+        <Button href="/quote?service=community-support">Ask About Community Support</Button>
+        <Button href="#services" variant="secondary">View Services</Button>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+      {supportServices.map((service) => (
+        <div class="rounded-md border border-border-light bg-alt-bg px-5 py-4">
+          <div class="mb-3 h-1 w-8 rounded-full bg-orange/70"></div>
+          <p class="font-barlow-condensed text-[14px] font-semibold uppercase tracking-[1.5px] text-cream">
+            {service}
+          </p>
+        </div>
+      ))}
+    </div>
+  </div>
+</div>
