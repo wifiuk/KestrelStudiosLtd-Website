@@ -6,6 +6,7 @@ import ServiceCard from '../components/ServiceCard.astro';
 import ValueCard from '../components/ValueCard.astro';
 import ProcessSteps from '../components/ProcessSteps.astro';
 import CTASection from '../components/CTASection.astro';
+import CommunitySupport from '../components/CommunitySupport.astro';
 import { services } from '../data/services';
 import { businessProfile, defaultSiteUrl, siteDescription, siteName } from '../data/site';
 
@@ -137,6 +138,7 @@ const homeStructuredData = [
           />
         ))}
       </div>
+      <CommunitySupport />
       <div class="mt-10 rounded-lg border border-border-subtle bg-surface px-6 py-5 text-center">
         <p class="font-barlow-condensed text-[14px] font-semibold uppercase tracking-[2px] text-cream">
           Need something different?

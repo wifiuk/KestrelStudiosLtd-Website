@@ -4,6 +4,7 @@ import { services } from '../data/services';
 const turnstileSiteKey = import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? '';
 const quoteEndpoint = import.meta.env.PUBLIC_QUOTE_FORM_ENDPOINT ?? '';
 const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
+const communitySupportServiceLabel = 'Community support / charity enquiry';
 ---
 
 {!formConfigured && (
@@ -102,6 +103,7 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
       {services.map((service) => (
         <option value={service.title}>{service.title}</option>
       ))}
+      <option value={communitySupportServiceLabel}>{communitySupportServiceLabel}</option>
       <option value="Not sure — need advice">Not sure — need advice</option>
     </select>
   </div>
@@ -239,10 +241,21 @@ const formConfigured = Boolean(turnstileSiteKey && quoteEndpoint);
   const locationInput = document.getElementById('quote-location');
   const locationSuggestions = document.getElementById('quote-location-suggestions');
   const locationHelper = document.getElementById('quote-location-helper');
+  const serviceSelect = document.getElementById('quote-service');
+  const serviceParamMap = {
+    'community-support': 'Community support / charity enquiry',
+    charity: 'Community support / charity enquiry',
+  };
   let addressLookupTimer;
   let addressLookupAbort;
   let selectedLocationValue = '';
   let addressLookupConfigured = false;
+
+  const selectedServiceParam = new URLSearchParams(window.location.search).get('service')?.trim();
+  const selectedServiceValue = selectedServiceParam ? serviceParamMap[selectedServiceParam] : '';
+  if (selectedServiceValue && serviceSelect instanceof HTMLSelectElement) {
+    serviceSelect.value = selectedServiceValue;
+  }
 
   const buildLookupUrl = (endpoint, query) => {
     const url = new URL(endpoint, window.location.href);
